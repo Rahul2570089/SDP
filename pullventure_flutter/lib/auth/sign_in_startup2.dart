@@ -1,14 +1,86 @@
 import 'package:flutter/material.dart';
-import 'package:pullventure_flutter/auth/sign_in_investor2.dart';
+import 'package:image_picker/image_picker.dart';
 
-class SignInInvestor extends StatefulWidget {
-  const SignInInvestor({super.key});
+class SignInStartUp2 extends StatefulWidget {
+  const SignInStartUp2({super.key});
 
   @override
-  State<SignInInvestor> createState() => _SignInInvestorState();
+  State<SignInStartUp2> createState() => _SignInStartUp2State();
 }
 
-class _SignInInvestorState extends State<SignInInvestor> {
+class _SignInStartUp2State extends State<SignInStartUp2> {
+
+List<String> menuItem = [
+    'Select sector',
+    'Sector Agnostic',
+    'Agriculture',
+    'Advertising',
+    'Aeronautics and space',
+    'Airport operations',
+    'Artificial Intelligence',
+    'AR/VR (Augmented and virtual reality)',
+    'Automation',
+    'Architecture',
+    'Art and Photography',
+    'Automobile',
+    'Biotechnology',
+    'Blockchain',
+    'Chemicals',
+    'Construction',
+    'Cloud computing',
+    'Consumer goods',
+    'Cryptocurrency',
+    'Data analytics',
+    'Defence',
+    'Dating Matrimonal',
+    'E-commerce',
+    'Education',
+    'Electronics',
+    'Energy',
+    'Entertainment',
+    'Fashion',
+    'Finance',
+    'Food and beverage',
+    'Gaming',
+    'Government',
+    'Healthcare',
+    'Hospitality',
+    'Human resources',
+    'Insurance',
+    'Information Technology',
+    'Investment',
+    'Logistics',
+    'Manufacturing',
+    'Marketing',
+    'Media',
+    'Medical devices',
+    'Mobile',
+    'Music',
+    'Nanotechnology',
+    'Natural resources',
+    'Pharmaceuticals',
+    'Real estate',
+    'Retail',
+    'Robotics',
+    'Security',
+    'Social media',
+    'Sports',
+    'Supply chain',
+    'Telecommunications',
+    'Textiles',
+    'Transportation',
+    'Travel and Tourism',
+    'Venture capital',
+    'Waste management',
+    'Water'
+  ];
+
+  String selected = "Select sector";
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +111,7 @@ class _SignInInvestorState extends State<SignInInvestor> {
                 "Create new",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
               ),
-              const Text("Investor account",
+              const Text("Start-up account",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
               Row(
                 children: [
@@ -61,7 +133,7 @@ class _SignInInvestorState extends State<SignInInvestor> {
           padding: const EdgeInsets.only(top: 200.0, left: 40.0, right: 40.0),
           child: Container(
             width: MediaQuery.of(context).size.width - 80,
-            height: MediaQuery.of(context).size.height - 350,
+            height: MediaQuery.of(context).size.height - 280,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(40),
@@ -82,7 +154,30 @@ class _SignInInvestorState extends State<SignInInvestor> {
                   child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "NAME",
+                        "COMPANY LOGO",
+                        style: TextStyle(color: Colors.grey),
+                      )),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 15.0, vertical: 8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextButton.icon(onPressed: () {
+                      final image = ImagePicker().pickImage(source: ImageSource.gallery);
+                      
+                    }, icon: const Icon(Icons.upload_file_rounded), label: const Text("Upload logo"))
+                  ),
+                ),
+                const SizedBox(height: 30),
+                const Padding(
+                  padding: EdgeInsets.only(left: 15.0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "COMPANY HEADQUARTERS",
                         style: TextStyle(color: Colors.grey),
                       )),
                 ),
@@ -95,7 +190,7 @@ class _SignInInvestorState extends State<SignInInvestor> {
                         borderRadius: BorderRadius.circular(10)),
                     child: TextFormField(
                       decoration: const InputDecoration(
-                        hintText: "Enter your name",
+                        hintText: "Enter your company headquarters",
                         hintStyle: TextStyle(color: Colors.grey),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.only(
@@ -110,7 +205,7 @@ class _SignInInvestorState extends State<SignInInvestor> {
                   child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "EMAIL",
+                        "COMPANY SECTOR",
                         style: TextStyle(color: Colors.grey),
                       )),
                 ),
@@ -121,14 +216,22 @@ class _SignInInvestorState extends State<SignInInvestor> {
                     decoration: BoxDecoration(
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(10)),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: "Enter your email",
-                        hintStyle: TextStyle(color: Colors.grey),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.only(
-                            left: 15, bottom: 11, top: 11, right: 15),
-                      ),
+                    child: DropdownButton<String>(
+                      value: selected,
+                      items: menuItem
+                          .map(
+                              (e) => DropdownMenuItem<String>(value: e, child: Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: Text(e),
+                              )))
+                          .toList(),
+                      onChanged: (val) {
+                        if(val!.isNotEmpty) {
+                          setState(() {
+                            selected = val;
+                          });
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -138,7 +241,7 @@ class _SignInInvestorState extends State<SignInInvestor> {
                   child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "MOBILE NUMBER",
+                        "BASIC DESCRIPTION",
                         style: TextStyle(color: Colors.grey),
                       )),
                 ),
@@ -151,7 +254,7 @@ class _SignInInvestorState extends State<SignInInvestor> {
                         borderRadius: BorderRadius.circular(10)),
                     child: TextFormField(
                       decoration: const InputDecoration(
-                        hintText: "Enter your mobile number",
+                        hintText: "Enter your company description",
                         hintStyle: TextStyle(color: Colors.grey),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.only(
@@ -161,12 +264,27 @@ class _SignInInvestorState extends State<SignInInvestor> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 40.0, right: 20.0),
+                  padding: const EdgeInsets.only(top: 20.0),
                   child: Align(
-                    alignment: Alignment.centerRight,
-                    child: InkWell(onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInInvestor2()));
-                    }, child: const Text("Next >")),
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                          fixedSize: MaterialStateProperty.all<Size>(
+                            const Size(250, 40),
+                          ),
+                          elevation: MaterialStateProperty.all<double>(0),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                            const Color(0xFFfeb06a),
+                          ),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                        ),
+                        child: const Text("Sign Up")),
                   ),
                 )
               ],

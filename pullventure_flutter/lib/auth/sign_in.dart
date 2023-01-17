@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pullventure_flutter/auth/sign_in_investor.dart';
+import 'package:pullventure_flutter/auth/sign_in_startup.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -45,7 +47,9 @@ class _SignInState extends State<SignIn> {
                     height: 50,
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInInvestor()));
+                      },
                       style: ButtonStyle(
                         elevation: MaterialStateProperty.all<double>(0),
                         backgroundColor:
@@ -74,7 +78,9 @@ class _SignInState extends State<SignIn> {
                     height: 50,
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInStartUp()));
+                      },
                       style: ButtonStyle(
                         elevation: MaterialStateProperty.all<double>(0),
                         backgroundColor:
