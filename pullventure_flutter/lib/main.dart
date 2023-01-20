@@ -1,6 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:pullventure_client/pullventure_client.dart';
 import 'package:flutter/material.dart';
-import 'package:pullventure_flutter/auth/sign_in.dart';
+import 'package:pullventure_flutter/auth/sign_in_choice.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
 // Sets up a singleton client object that can be used to talk to the server from
@@ -11,7 +12,9 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 var client = Client('http://localhost:8080/')
   ..connectivityMonitor = FlutterConnectivityMonitor();
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
