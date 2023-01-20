@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pullventure_flutter/auth/sign_in_investor.dart';
 import 'package:pullventure_flutter/auth/sign_in_startup.dart';
 
@@ -9,7 +10,29 @@ class SignIn extends StatefulWidget {
   State<SignIn> createState() => _SignInState();
 }
 
+
 class _SignInState extends State<SignIn> {
+
+@override
+void initState() {
+  super.initState();
+  SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+  ]);
+}
+
+@override
+dispose(){
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeRight,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  super.dispose();
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
@@ -62,7 +85,7 @@ class _SignInState extends State<SignIn> {
                       ),
                       child: const Text(
                         "Sign up as an investor",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: TextStyle(color: Colors.white, fontSize: 17),
                       ),
                     ),
                   ),
@@ -93,7 +116,7 @@ class _SignInState extends State<SignIn> {
                       ),
                       child: const Text(
                         "Sign up as a start-up",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: TextStyle(color: Colors.white, fontSize: 17),
                       ),
                     ),
                   ),

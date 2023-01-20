@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SignInInvestor2 extends StatefulWidget {
   const SignInInvestor2({super.key});
@@ -8,6 +9,25 @@ class SignInInvestor2 extends StatefulWidget {
 }
 
 class _SignInInvestor2State extends State<SignInInvestor2> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+  }
+
+  @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
+  }
+
   List<String> menuItem = [
     'Select sector',
     'Sector Agnostic',
@@ -87,9 +107,10 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
           fit: BoxFit.cover,
         ),
         Positioned(
-            top: 20,
+            top: 30,
             left: 5,
             child: IconButton(
+              iconSize: 35,
                 splashColor: Colors.black,
                 splashRadius: 5,
                 onPressed: () {
@@ -124,10 +145,10 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 200.0, left: 40.0, right: 40.0),
+          padding: const EdgeInsets.only(top: 180.0, left: 18, right: 18, bottom: 30),
           child: Container(
-            width: MediaQuery.of(context).size.width - 80,
-            height: MediaQuery.of(context).size.height - 280,
+            // width: MediaQuery.of(context).size.width - 80,
+            // height: MediaQuery.of(context).size.height - 240,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(40),
@@ -143,6 +164,34 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 15.0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "MOBILE NUMBER",
+                        style: TextStyle(color: Colors.grey),
+                      )),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 15.0, vertical: 8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        hintText: "Enter your mobile number",
+                        hintStyle: TextStyle(color: Colors.grey),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.only(
+                            left: 15, bottom: 11, top: 11, right: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10,),
                 const Padding(
                   padding: EdgeInsets.only(left: 15.0),
                   child: Align(
@@ -170,7 +219,7 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
                 const Padding(
                   padding: EdgeInsets.only(left: 15.0),
                   child: Align(
@@ -198,7 +247,7 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
                 const Padding(
                   padding: EdgeInsets.only(left: 15.0),
                   child: Align(
@@ -226,39 +275,42 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
                 const Padding(
                   padding: EdgeInsets.only(left: 15.0),
                   child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "INVESTMENT SECTION",
+                        "INVESTMENT SECTOR",
                         style: TextStyle(color: Colors.grey),
                       )),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 15.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
                   child: Container(
                     decoration: BoxDecoration(
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(10)),
-                    child: DropdownButton<String>(
-                      value: selected,
-                      items: menuItem
-                          .map(
-                              (e) => DropdownMenuItem<String>(value: e, child: Padding(
-                                padding: const EdgeInsets.only(left: 5.0),
-                                child: Text(e),
-                              )))
-                          .toList(),
-                      onChanged: (val) {
-                        if(val!.isNotEmpty) {
-                          setState(() {
-                            selected = val;
-                          });
-                        }
-                      },
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: selected,
+                        isExpanded: true,
+                        items: menuItem
+                            .map((e) => DropdownMenuItem<String>(
+                                value: e,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 5.0),
+                                  child: Text(e),
+                                )))
+                            .toList(),
+                        onChanged: (val) {
+                          if (val!.isNotEmpty) {
+                            setState(() {
+                              selected = val;
+                            });
+                          }
+                        },
+                      ),
                     ),
                   ),
                 ),

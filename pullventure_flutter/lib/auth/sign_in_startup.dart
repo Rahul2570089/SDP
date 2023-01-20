@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pullventure_flutter/auth/sign_in_startup2.dart';
 
 class SignInStartUp extends StatefulWidget {
@@ -9,6 +10,25 @@ class SignInStartUp extends StatefulWidget {
 }
 
 class _SignInStartUpState extends State<SignInStartUp> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+  }
+
+  @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,19 +41,20 @@ class _SignInStartUpState extends State<SignInStartUp> {
           fit: BoxFit.cover,
         ),
         Positioned(
-            top: 20,
+            top: 30,
             left: 5,
             child: IconButton(
+                iconSize: 35,
                 splashColor: Colors.black,
                 splashRadius: 5,
                 onPressed: () {
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.chevron_left_sharp))),
-        Positioned(
+        Positioned.fill(
           top: 70,
-          left: MediaQuery.of(context).size.width / 2 - 105,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
                 "Create new",
@@ -42,8 +63,9 @@ class _SignInStartUpState extends State<SignInStartUp> {
               const Text("Start-up account",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Already Regsitered? "),
+                  const Text("Already Registered? "),
                   InkWell(
                       onTap: () {},
                       child: const Text(
@@ -58,10 +80,9 @@ class _SignInStartUpState extends State<SignInStartUp> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 200.0, left: 40.0, right: 40.0),
+          padding: const EdgeInsets.only(
+              top: 180.0, left: 18.0, right: 18.0, bottom: 30),
           child: Container(
-            width: MediaQuery.of(context).size.width - 80,
-            height: MediaQuery.of(context).size.height - 280,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(40),
@@ -104,7 +125,7 @@ class _SignInStartUpState extends State<SignInStartUp> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
                 const Padding(
                   padding: EdgeInsets.only(left: 15.0),
                   child: Align(
@@ -132,7 +153,63 @@ class _SignInStartUpState extends State<SignInStartUp> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
+                const Padding(
+                  padding: EdgeInsets.only(left: 15.0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "PASSWORD",
+                        style: TextStyle(color: Colors.grey),
+                      )),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 15.0, vertical: 8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        hintText: "Set your password",
+                        hintStyle: TextStyle(color: Colors.grey),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.only(
+                            left: 15, bottom: 11, top: 11, right: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                const Padding(
+                  padding: EdgeInsets.only(left: 15.0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "CONFIRM PASSWORD",
+                        style: TextStyle(color: Colors.grey),
+                      )),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 15.0, vertical: 8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        hintText: "Confirm your password",
+                        hintStyle: TextStyle(color: Colors.grey),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.only(
+                            left: 15, bottom: 11, top: 11, right: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
                 const Padding(
                   padding: EdgeInsets.only(left: 15.0),
                   child: Align(
@@ -160,41 +237,25 @@ class _SignInStartUpState extends State<SignInStartUp> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
-                const Padding(
-                  padding: EdgeInsets.only(left: 15.0),
-                  child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "WEBSITE",
-                        style: TextStyle(color: Colors.grey),
-                      )),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 15.0, vertical: 8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(10)),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: "Enter your company website",
-                        hintStyle: TextStyle(color: Colors.grey),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.only(
-                            left: 15, bottom: 11, top: 11, right: 15),
-                      ),
-                    ),
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 40.0, right: 20.0),
                   child: Align(
                     alignment: Alignment.centerRight,
-                    child: InkWell(onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInStartUp2()));
-                    }, child: const Text("Next >")),
+                    child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const SignInStartUp2()));
+                        },
+                        child: const Text(
+                          "Next >",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.blue),
+                        )),
                   ),
                 )
               ],
@@ -203,6 +264,5 @@ class _SignInStartUpState extends State<SignInStartUp> {
         )
       ]),
     );
-  
   }
 }
