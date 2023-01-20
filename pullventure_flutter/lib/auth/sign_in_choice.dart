@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pullventure_flutter/auth/sign_in_investor.dart';
-import 'package:pullventure_flutter/auth/sign_in_startup.dart';
+import 'package:pullventure_flutter/auth/signin/sign_in_investor.dart';
+import 'package:pullventure_flutter/auth/signin/sign_in_startup.dart';
+
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
