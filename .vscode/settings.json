@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 8090,
+            "driver": "PostgreSQL",
+            "name": "pullventure",
+            "database": "pullventure",
+            "username": "postgres",
+            "password": "zYMtJ824G3Zew55hWhb1_40M5_kU-4Jy"
+        }
+    ]
+}

@@ -1,2 +1,14 @@
 example:
   - hello:
+investor:
+  - create:
+  - read:
+  - readAll:
+  - update:
+  - delete:
+startUp:
+  - create:
+  - read:
+  - readAll:
+  - update:
+  - delete:

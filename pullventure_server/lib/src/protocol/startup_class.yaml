@@ -1,0 +1,7 @@
+class: StartUp
+table: startups
+
+fields:
+  name: String
+  email: String
+  password: String

@@ -2,12 +2,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pullventure_client/pullventure_client.dart';
 import 'package:pullventure_flutter/auth/authenticate.dart';
+import 'package:pullventure_flutter/database/database_methods.dart';
+import 'package:pullventure_flutter/main.dart';
 
 class SignInStartUp2 extends StatefulWidget {
+  final String name;
   final String email;
   final String password;
-  const SignInStartUp2({super.key, required this.email, required this.password});
+  const SignInStartUp2({super.key, required this.email, required this.password, required this.name});
 
   @override
   State<SignInStartUp2> createState() => _SignInStartUp2State();
@@ -104,6 +108,7 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
   final formKey = GlobalKey<FormState>();
   TextEditingController companyHeadquarters = TextEditingController();
   TextEditingController basicDescription = TextEditingController();
+  DatabaseMethods databaseMethods = DatabaseMethods();
 
   Future pickImage(BuildContext context, ImageSource img) async {
     try {
@@ -327,7 +332,22 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
                                     const SnackBar(content: Text("Please select your company sector")));
                                 return;
                               }
-                              AuthMethod.signupwithemailpassword(widget.email, widget.password, context).then((value)  {
+                              AuthMethod.signupwithemailpassword(widget.email, widget.password, context).then((value) async {
+                                if(value!=null) {
+                                  databaseMethods.addStartup({
+                                    "name": widget.name,
+                                    "email": widget.email,
+                                    "headquarters": companyHeadquarters.text,
+                                    "description": basicDescription.text,
+                                    "sector": selected,
+                                  });
+                                  final startup = StartUp(
+                                    name: widget.name,
+                                    email: widget.email,
+                                    password: widget.password,
+                                  );
+                                  await client.startUp.create(startup);
+                                }
                               });
                             }
                           },

@@ -36,6 +36,7 @@ dependencies:
   firebase_auth: ^4.2.5
   cloud_firestore: ^4.3.1
   firebase_core: ^2.4.1
+  serverpod_auth_firebase_flutter: 0.9.21
 
 dev_dependencies:
   flutter_lints: ^2.0.1

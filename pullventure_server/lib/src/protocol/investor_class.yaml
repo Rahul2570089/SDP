@@ -1,0 +1,7 @@
+class: Investor
+table: investors
+
+fields:
+  name: String
+  email: String
+  password: String

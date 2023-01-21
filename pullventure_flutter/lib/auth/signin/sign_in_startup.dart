@@ -256,7 +256,7 @@ class _SignInStartUpState extends State<SignInStartUp> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            SignInStartUp2(email: email.text, password: password.text,)));
+                                            SignInStartUp2(name: name.text,email: email.text, password: password.text,)));
                               }
                             }
                           },

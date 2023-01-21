@@ -258,7 +258,7 @@ class _SignInInvestorState extends State<SignInInvestor> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            SignInInvestor2(email: email.text, password: password.text)));
+                                            SignInInvestor2(name: name.text ,email: email.text, password: password.text)));
                               }
                             }
                           },

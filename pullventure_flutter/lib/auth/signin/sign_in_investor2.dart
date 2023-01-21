@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pullventure_client/pullventure_client.dart';
 import 'package:pullventure_flutter/auth/authenticate.dart';
+import 'package:pullventure_flutter/database/database_methods.dart';
+import 'package:pullventure_flutter/main.dart';
 
 class SignInInvestor2 extends StatefulWidget {
+  final String name;
   final String email;
   final String password;
-  const SignInInvestor2({super.key, required this.email, required this.password});
+  const SignInInvestor2(
+      {super.key,
+      required this.email,
+      required this.password,
+      required this.name});
 
   @override
   State<SignInInvestor2> createState() => _SignInInvestor2State();
@@ -102,7 +110,7 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
   final TextEditingController companyName = TextEditingController();
   final TextEditingController aboutCompany = TextEditingController();
   final TextEditingController companyWebsite = TextEditingController();
-
+  DatabaseMethods databaseMethods = DatabaseMethods();
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +127,7 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
             top: 30,
             left: 5,
             child: IconButton(
-              iconSize: 35,
+                iconSize: 35,
                 splashColor: Colors.black,
                 splashRadius: 5,
                 onPressed: () {
@@ -141,7 +149,8 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 180.0, left: 18, right: 18, bottom: 30),
+          padding: const EdgeInsets.only(
+              top: 180.0, left: 18, right: 18, bottom: 30),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -192,7 +201,9 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10,),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   const Padding(
                     padding: EdgeInsets.only(left: 15.0),
                     child: Align(
@@ -324,8 +335,26 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                       alignment: Alignment.center,
                       child: ElevatedButton(
                           onPressed: () {
-                            if(formKey.currentState!.validate()) {
-                              AuthMethod.signupwithemailpassword(widget.email, widget.password, context).then((value)  {
+                            if (formKey.currentState!.validate()) {
+                              AuthMethod.signupwithemailpassword(
+                                      widget.email, widget.password, context)
+                                  .then((value) async {
+                                if (value != null) {
+                                  databaseMethods.addInvestor({
+                                    "name": widget.name,
+                                    "email": widget.email,
+                                    "companyname": companyName.text,
+                                    "aboutcompany": aboutCompany.text,
+                                    "mobilenumber": mobileNumber.text,
+                                    "investmentsector": selected,
+                                  });
+                                  final investor = Investor(
+                                    name: widget.name,
+                                    email: widget.email,
+                                    password: widget.password,
+                                  );
+                                  await client.investor.create(investor);
+                                }
                               });
                             }
                           },
@@ -337,8 +366,8 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                             backgroundColor: MaterialStateProperty.all<Color>(
                               const Color(0xFFfeb06a),
                             ),
-                            shape:
-                                MaterialStateProperty.all<RoundedRectangleBorder>(
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0),
                               ),

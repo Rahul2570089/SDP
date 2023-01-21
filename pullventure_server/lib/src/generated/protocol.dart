@@ -9,8 +9,14 @@ library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixe
 
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'example.dart' as _i2;
-import 'package:serverpod/protocol.dart' as _i3;
-export 'example.dart'; // ignore_for_file: equal_keys_in_map
+import 'investor_class.dart' as _i3;
+import 'startup_class.dart' as _i4;
+import 'package:pullventure_server/src/generated/investor_class.dart' as _i5;
+import 'package:pullventure_server/src/generated/startup_class.dart' as _i6;
+import 'package:serverpod/protocol.dart' as _i7;
+export 'example.dart';
+export 'investor_class.dart';
+export 'startup_class.dart'; // ignore_for_file: equal_keys_in_map
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -33,11 +39,31 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i2.Example) {
       return _i2.Example.fromJson(data, this) as T;
     }
+    if (t == _i3.Investor) {
+      return _i3.Investor.fromJson(data, this) as T;
+    }
+    if (t == _i4.StartUp) {
+      return _i4.StartUp.fromJson(data, this) as T;
+    }
     if (t == _i1.getType<_i2.Example?>()) {
       return (data != null ? _i2.Example.fromJson(data, this) : null) as T;
     }
+    if (t == _i1.getType<_i3.Investor?>()) {
+      return (data != null ? _i3.Investor.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i4.StartUp?>()) {
+      return (data != null ? _i4.StartUp.fromJson(data, this) : null) as T;
+    }
+    if (t == List<_i5.Investor>) {
+      return (data as List).map((e) => deserialize<_i5.Investor>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<_i6.StartUp>) {
+      return (data as List).map((e) => deserialize<_i6.StartUp>(e)).toList()
+          as dynamic;
+    }
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
+      return _i7.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -47,6 +73,12 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i2.Example) {
       return 'Example';
     }
+    if (data is _i3.Investor) {
+      return 'Investor';
+    }
+    if (data is _i4.StartUp) {
+      return 'StartUp';
+    }
     return super.getClassNameForObject(data);
   }
 
@@ -55,16 +87,28 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'Example') {
       return deserialize<_i2.Example>(data['data']);
     }
+    if (data['className'] == 'Investor') {
+      return deserialize<_i3.Investor>(data['data']);
+    }
+    if (data['className'] == 'StartUp') {
+      return deserialize<_i4.StartUp>(data['data']);
+    }
     return super.deserializeByClassName(data);
   }
 
   @override
   _i1.Table? getTableForType(Type t) {
     {
-      var table = _i3.Protocol().getTableForType(t);
+      var table = _i7.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
+    }
+    switch (t) {
+      case _i3.Investor:
+        return _i3.Investor.t;
+      case _i4.StartUp:
+        return _i4.StartUp.t;
     }
     return null;
   }
