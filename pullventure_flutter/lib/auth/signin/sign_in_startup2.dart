@@ -1,7 +1,6 @@
-import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:pullventure_client/pullventure_client.dart';
 import 'package:pullventure_flutter/auth/authenticate.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
@@ -11,7 +10,11 @@ class SignInStartUp2 extends StatefulWidget {
   final String name;
   final String email;
   final String password;
-  const SignInStartUp2({super.key, required this.email, required this.password, required this.name});
+  const SignInStartUp2(
+      {super.key,
+      required this.email,
+      required this.password,
+      required this.name});
 
   @override
   State<SignInStartUp2> createState() => _SignInStartUp2State();
@@ -103,23 +106,39 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
   ];
 
   String selected = "Select sector";
-  File? _image;
+  PlatformFile? _image;
   Icon _icon = const Icon(Icons.upload_file_rounded);
   final formKey = GlobalKey<FormState>();
   TextEditingController companyHeadquarters = TextEditingController();
   TextEditingController basicDescription = TextEditingController();
   DatabaseMethods databaseMethods = DatabaseMethods();
 
-  Future pickImage(BuildContext context, ImageSource img) async {
+  Future pickImage(BuildContext context) async {
     try {
-      final image = await ImagePicker().pickImage(source: img);
-      if (image == null) return;
+      final image = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowMultiple: false,
+        allowedExtensions: ['jpg', 'png', 'jpeg', 'svg'],
+      );
+      if (image == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No image selected'),
+          ),
+        );
+        return;
+      }
       setState(() {
-        _image = File(image.path);
-        if (_image != null) {
-          _icon = const Icon(Icons.check_circle_outline);
-        }
+        _image = image.files.first;
+        _icon = const Icon(Icons.check_circle_outline_rounded);
       });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Image selected'),
+        ),
+      );
     } on Exception catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -204,7 +223,7 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
                             borderRadius: BorderRadius.circular(10)),
                         child: TextButton.icon(
                             onPressed: () {
-                              pickImage(context, ImageSource.gallery);
+                              pickImage(context);
                             },
                             style: const ButtonStyle(
                               splashFactory: NoSplash.splashFactory,
@@ -321,19 +340,25 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
                       alignment: Alignment.center,
                       child: ElevatedButton(
                           onPressed: () {
-                            if(formKey.currentState!.validate()) {
-                              if(_image == null) {
+                            if (formKey.currentState!.validate()) {
+                              if (_image == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text("Please upload your company logo")));
+                                    const SnackBar(
+                                        content: Text(
+                                            "Please upload your company logo")));
                                 return;
                               }
-                              if(selected == "Select sector") {
+                              if (selected == "Select sector") {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text("Please select your company sector")));
+                                    const SnackBar(
+                                        content: Text(
+                                            "Please select your company sector")));
                                 return;
                               }
-                              AuthMethod.signupwithemailpassword(widget.email, widget.password, context).then((value) async {
-                                if(value!=null) {
+                              AuthMethod.signupwithemailpassword(
+                                      widget.email, widget.password, context)
+                                  .then((value) async {
+                                if (value != null) {
                                   databaseMethods.addStartup({
                                     "name": widget.name,
                                     "email": widget.email,
@@ -346,6 +371,10 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
                                     email: widget.email,
                                     password: widget.password,
                                   );
+                                  databaseMethods.uploadLogo(context,
+                                      image: _image,
+                                      email: widget.email,
+                                      type: "startup");
                                   await client.startUp.create(startup);
                                 }
                               });

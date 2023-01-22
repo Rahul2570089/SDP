@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pullventure_client/pullventure_client.dart';
 import 'package:pullventure_flutter/auth/authenticate.dart';
 import 'package:pullventure_flutter/auth/signin/sign_in_investor.dart';
+import 'package:pullventure_flutter/main.dart';
 
 class LogInInvestor extends StatefulWidget {
   const LogInInvestor({super.key});
@@ -179,10 +181,29 @@ class _LogInInvestorState extends State<LogInInvestor> {
                     child: Align(
                       alignment: Alignment.center,
                       child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if(formKey.currentState!.validate()) {
-                              AuthMethod.signinwithemailpassword(email.text, password.text, context).then((value)  {
-                              });
+                              // AuthMethod.signinwithemailpassword(email.text, password.text, context).then((value)  {
+                              // });
+                              List<Investor> list= await client.investor.readAll();
+                              for(var i in list) {
+                                if(i.email==email.text && i.password==password.text) {
+                                  if(!mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text("Login Successful")));
+                                }
+                                else if(i.email==email.text && i.password!=password.text) {
+                                  if(!mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text("Please enter correct credentials")));
+                                }
+                              }
+                              if(!mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Account does not exist'),
+                                ),
+                              );
                             }
                           },
                           style: ButtonStyle(
