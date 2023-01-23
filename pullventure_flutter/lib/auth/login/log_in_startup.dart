@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:pullventure_client/pullventure_client.dart';
 import 'package:pullventure_flutter/auth/authenticate.dart';
 import 'package:pullventure_flutter/auth/signin/sign_in_startup.dart';
+import 'package:pullventure_flutter/chatscreen/homescreen_chat.dart';
 import 'package:pullventure_flutter/main.dart';
 
 class LogInStartUp extends StatefulWidget {
@@ -188,19 +189,32 @@ class _LogInStartUpState extends State<LogInStartUp> {
                               //     .then((value) {});
                               List<StartUp> list =
                                   await client.startUp.readAll();
-                              for(var i in list) {
-                                if(i.email==email.text && i.password==password.text) {
-                                  if(!mounted) return;
+                              for (var i in list) {
+                                if (i.email == email.text &&
+                                    i.password == password.text) {
+                                  if (!mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("Login Successful")));
-                                }
-                                else if(i.email==email.text && i.password!=password.text) {
-                                  if(!mounted) return;
+                                      const SnackBar(
+                                          content: Text("Login Successful")));
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChatHomeScreen(
+                                                type: "investor",
+                                              )),
+                                      (route) => false);
+                                  return;
+                                } else if (i.email == email.text &&
+                                    i.password != password.text) {
+                                  if (!mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("Please enter correct credentials")));
+                                      const SnackBar(
+                                          content: Text(
+                                              "Please enter correct credentials")));
                                 }
                               }
-                              if(!mounted) return;
+                              if (!mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Account does not exist'),

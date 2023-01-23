@@ -16,7 +16,8 @@ class DatabaseMethods {
     await firestore.collection('startups').add(info);
   }
 
-  Future uploadLogo(BuildContext context ,{PlatformFile? image, String? email, String? type}) async {
+  Future uploadLogo(BuildContext context,
+      {PlatformFile? image, String? email, String? type}) async {
     final path = "$type/$email/${image?.name}";
     final file = File(image?.path ?? '');
 
@@ -24,4 +25,57 @@ class DatabaseMethods {
     UploadTask uploadTask = ref.putFile(file);
     await uploadTask.whenComplete(() => {});
   }
-} 
+
+  getAllInvestors() {
+    firestore.collection('investors').get();
+  }
+
+  getAllStartups() {
+    firestore.collection('startups').get();
+  }
+
+  createChatroom(String? roomid, chatroomMap, BuildContext context) {
+    FirebaseFirestore.instance
+        .collection("chatroom")
+        .doc(roomid)
+        .set(chatroomMap)
+        .catchError((e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    });
+  }
+
+  addConversationMsg(String chatroomid, messagemap, BuildContext context) {
+    FirebaseFirestore.instance
+        .collection("chatroom")
+        .doc(chatroomid)
+        .collection("chats")
+        .add(messagemap)
+        .catchError((e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    });
+  }
+
+  getConversationMsg(String chatroomid) async {
+    return FirebaseFirestore.instance
+        .collection("chatroom")
+        .doc(chatroomid)
+        .collection("chats")
+        .orderBy("timeOrder")
+        .snapshots();
+  }
+
+  getChatRoom(String? username) async {
+    return FirebaseFirestore.instance
+        .collection("chatroom")
+        .where("users", arrayContains: username)
+        .snapshots();
+  }
+}
