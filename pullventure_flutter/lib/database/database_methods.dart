@@ -26,12 +26,12 @@ class DatabaseMethods {
     await uploadTask.whenComplete(() => {});
   }
 
-  getAllInvestors() {
-    firestore.collection('investors').get();
+  Future<List<Map<String, dynamic>>> getAllInvestors() {
+    return firestore.collection('investors').get().then((value) => value.docs.map((e) => e.data()).toList());
   }
 
-  getAllStartups() {
-    firestore.collection('startups').get();
+  Future<List<Map<String, dynamic>>> getAllStartups() async{
+    return firestore.collection('startups').get().then((value) => value.docs.map((e) => e.data()).toList());
   }
 
   createChatroom(String? roomid, chatroomMap, BuildContext context) {
@@ -53,14 +53,7 @@ class DatabaseMethods {
         .collection("chatroom")
         .doc(chatroomid)
         .collection("chats")
-        .add(messagemap)
-        .catchError((e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
-    });
+        .add(messagemap);
   }
 
   getConversationMsg(String chatroomid) async {

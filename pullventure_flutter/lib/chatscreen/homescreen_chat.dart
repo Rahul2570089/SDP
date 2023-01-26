@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pullventure_flutter/chatscreen/search_list.dart';
-import 'package:pullventure_flutter/constants/constants.dart';
+import 'package:pullventure_flutter/model/constants.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
 
 class ChatHomeScreen extends StatefulWidget {
@@ -100,18 +100,22 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Chat',
+            tooltip: 'Chat',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.newspaper),
             label: 'News',
+            tooltip: 'News'
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.event),
             label: 'Events',
+            tooltip: 'Events'
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.schema_outlined),
-            label: 'Profile',
+            label: 'Government schemes',
+            tooltip: 'Government schemes',
           ),
         ],
         onTap: (value) => setState(() => currentIndex = value),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pullventure_client/pullventure_client.dart';
-import 'package:pullventure_flutter/auth/authenticate.dart';
 import 'package:pullventure_flutter/auth/signin/sign_in_startup.dart';
 import 'package:pullventure_flutter/chatscreen/homescreen_chat.dart';
 import 'package:pullventure_flutter/main.dart';
@@ -168,7 +167,7 @@ class _LogInStartUpState extends State<LogInStartUp> {
                             ? "Please enter your password"
                             : null,
                         decoration: const InputDecoration(
-                          hintText: "Set your password",
+                          hintText: "Enter your password",
                           hintStyle: TextStyle(color: Colors.grey),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.only(
@@ -201,7 +200,7 @@ class _LogInStartUpState extends State<LogInStartUp> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               const ChatHomeScreen(
-                                                type: "investor",
+                                                type: "startup",
                                               )),
                                       (route) => false);
                                   return;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pullventure_client/pullventure_client.dart';
 import 'package:pullventure_flutter/auth/authenticate.dart';
+import 'package:pullventure_flutter/chatscreen/homescreen_chat.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
 import 'package:pullventure_flutter/main.dart';
 
@@ -141,8 +142,8 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
       );
     } on Exception catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No image selected'),
+        SnackBar(
+          content: Text(e.toString()),
         ),
       );
     }
@@ -371,11 +372,23 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
                                     email: widget.email,
                                     password: widget.password,
                                   );
-                                  databaseMethods.uploadLogo(context,
-                                      image: _image,
-                                      email: widget.email,
-                                      type: "startup");
-                                  await client.startUp.create(startup);
+                                  databaseMethods
+                                      .uploadLogo(context,
+                                          image: _image,
+                                          email: widget.email,
+                                          type: "startup")
+                                      .then((value) async {
+                                    await client.startUp.create(startup);
+                                    if (mounted) return;
+                                    Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const ChatHomeScreen(
+                                                  type: "startup",
+                                                )),
+                                        (route) => false);
+                                  });
                                 }
                               });
                             }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pullventure_client/pullventure_client.dart';
 import 'package:pullventure_flutter/auth/authenticate.dart';
+import 'package:pullventure_flutter/chatscreen/homescreen_chat.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
 import 'package:pullventure_flutter/main.dart';
 
@@ -353,7 +354,18 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                                     email: widget.email,
                                     password: widget.password,
                                   );
-                                  await client.investor.create(investor);
+                                  await client.investor
+                                      .create(investor)
+                                      .then((value) {
+                                    Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const ChatHomeScreen(
+                                                  type: "investor",
+                                                )),
+                                        (route) => false);
+                                  });
                                 }
                               });
                             }
