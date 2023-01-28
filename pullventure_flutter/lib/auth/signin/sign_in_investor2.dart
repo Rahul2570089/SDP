@@ -107,11 +107,12 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
 
   String selected = "Select sector";
   final formKey = GlobalKey<FormState>();
-  final TextEditingController mobileNumber = TextEditingController();
-  final TextEditingController companyName = TextEditingController();
-  final TextEditingController aboutCompany = TextEditingController();
-  final TextEditingController companyWebsite = TextEditingController();
+  static TextEditingController mobileNumber = TextEditingController();
+  static TextEditingController companyName = TextEditingController();
+  static TextEditingController aboutCompany = TextEditingController();
+  static TextEditingController companyWebsite = TextEditingController();
   DatabaseMethods databaseMethods = DatabaseMethods();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -337,6 +338,9 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                       child: ElevatedButton(
                           onPressed: () {
                             if (formKey.currentState!.validate()) {
+                              setState(() {
+                                isLoading = true;
+                              });
                               AuthMethod.signupwithemailpassword(
                                       widget.email, widget.password, context)
                                   .then((value) async {

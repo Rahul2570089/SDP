@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pullventure_flutter/chatscreen/search_list.dart';
 import 'package:pullventure_flutter/model/constants.dart';
@@ -15,7 +16,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   int currentIndex = 0;
   TextEditingController searchController = TextEditingController();
   DatabaseMethods dataBaseMethods = DatabaseMethods();
+  List<Map<String,dynamic>> searchChat = [];
   Stream? chatroom;
+  bool showSearchList = false;
 
   @override
   void initState() {
@@ -32,47 +35,71 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
     });
   }
 
-  Widget listView() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Container(
-              height: 50.0,
-              width: 50.0,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(50.0),
-              ),
-            ),
-            const SizedBox(width: 10.0),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Name',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Last message',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.grey,
-                  ),
+  Widget listView(list, isList) {
+    return ListView.builder(
+        itemCount: 10,//isList ? list.length : (list as QuerySnapshot).docs.length,
+        itemBuilder: (context, index) {
+          return Container(
+            padding: const EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 0,
+                  blurRadius: 7,
+                  offset: const Offset(0, 3), // changes position of shadow
                 ),
               ],
             ),
-          ],
-        ),
-        const Divider(
-          thickness: 1,
-          indent: 55,
-        )
-      ],
-    );
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      height: 50.0,
+                      width: 50.0,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
+                    ),
+                    const SizedBox(width: 10.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isList
+                              ? "Name $index"
+                              : (list as QuerySnapshot)
+                                  .docs[index]["chatroomid"]
+                                  .toString()
+                                  .replaceAll("_", "")
+                                  .replaceAll(Constants.name!, ""),
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Last message $index',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const Divider(
+                  thickness: 1,
+                  indent: 55,
+                )
+              ],
+            ),
+          );
+        });
   }
 
   @override
@@ -103,15 +130,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
             tooltip: 'Chat',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.newspaper),
-            label: 'News',
-            tooltip: 'News'
-          ),
+              icon: Icon(Icons.newspaper), label: 'News', tooltip: 'News'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            label: 'Events',
-            tooltip: 'Events'
-          ),
+              icon: Icon(Icons.event), label: 'Events', tooltip: 'Events'),
           BottomNavigationBarItem(
             icon: Icon(Icons.schema_outlined),
             label: 'Government schemes',
@@ -140,6 +161,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
             ),
             child: TextField(
               controller: searchController,
+              onChanged: (value) async{
+                
+              },
               decoration: const InputDecoration(
                 prefixIcon: Icon(Icons.search),
                 hintText: 'Search',
@@ -149,35 +173,35 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
           ),
           Expanded(
             child: ScrollConfiguration(
-              behavior: CustomBehavior(),
-              child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (itemBuilder, index) {
-                    return Container(
-                      padding: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 0,
-                            blurRadius: 7,
-                            offset: const Offset(
-                                0, 3), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: listView()
-                    );
-                  }),
-            ),
+                behavior: CustomBehavior(),
+                child: StreamBuilder(
+                  builder: (context, snapshot) {
+                    // if (snapshot.connectionState == ConnectionState.waiting) {
+                    //   return const Center(child: CircularProgressIndicator(),);
+                    // }
+                    // else if (snapshot.hasData) {
+                    //   return listView(snapshot.data);
+                    // }
+                    // else if (!snapshot.hasData) {
+                    //   return const Center(child: Text("No chats"),);
+                    // }
+                    // else {
+                    //   return const ScaffoldMessenger(child: Text("Some error occured"));
+                    // }
+                    return !showSearchList ? listView(snapshot.data, true) : listView(searchChat, true);
+                  },
+                )),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => SearchList(type: widget.type,)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SearchList(
+                        type: widget.type,
+                      )));
         },
         backgroundColor: Colors.amber[800],
         child: const Icon(Icons.search),

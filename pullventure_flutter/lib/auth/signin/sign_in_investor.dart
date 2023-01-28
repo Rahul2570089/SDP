@@ -30,17 +30,14 @@ class _SignInInvestorState extends State<SignInInvestor> {
     super.dispose();
   }
 
+  final formKey = GlobalKey<FormState>();
+  static TextEditingController email = TextEditingController();
+  static TextEditingController password = TextEditingController();
+  static TextEditingController name = TextEditingController();
+  static TextEditingController confirmPassword = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-
-
-  final formKey = GlobalKey<FormState>();
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
-  TextEditingController name = TextEditingController();
-  TextEditingController confirmPassword = TextEditingController();
-
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(children: [
@@ -78,7 +75,10 @@ class _SignInInvestorState extends State<SignInInvestor> {
                   const Text("Already Registered? "),
                   GestureDetector(
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const LogInInvestor()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LogInInvestor()));
                       },
                       child: const Text(
                         "Log in here",
@@ -130,9 +130,8 @@ class _SignInInvestorState extends State<SignInInvestor> {
                           borderRadius: BorderRadius.circular(10)),
                       child: TextFormField(
                         controller: name,
-                        validator: (value) => value!.isEmpty
-                            ? "Please enter your name"
-                            : null,
+                        validator: (value) =>
+                            value!.isEmpty ? "Please enter your name" : null,
                         decoration: const InputDecoration(
                           hintText: "Enter your name",
                           hintStyle: TextStyle(color: Colors.grey),
@@ -162,9 +161,8 @@ class _SignInInvestorState extends State<SignInInvestor> {
                           borderRadius: BorderRadius.circular(10)),
                       child: TextFormField(
                         controller: email,
-                        validator: (value) => value!.isEmpty
-                            ? "Please enter your email"
-                            : null,
+                        validator: (value) =>
+                            value!.isEmpty ? "Please enter your email" : null,
                         decoration: const InputDecoration(
                           hintText: "Enter your email",
                           hintStyle: TextStyle(color: Colors.grey),
@@ -247,18 +245,20 @@ class _SignInInvestorState extends State<SignInInvestor> {
                       alignment: Alignment.centerRight,
                       child: InkWell(
                           onTap: () {
-                            if(formKey.currentState!.validate()) {
-                              if(password.text != confirmPassword.text) {
+                            if (formKey.currentState!.validate()) {
+                              if (password.text != confirmPassword.text) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                        content: Text("Passwords do not match")));
-                              }
-                              else {
+                                        content:
+                                            Text("Passwords do not match")));
+                              } else {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            SignInInvestor2(name: name.text ,email: email.text, password: password.text)));
+                                        builder: (context) => SignInInvestor2(
+                                            name: name.text,
+                                            email: email.text,
+                                            password: password.text)));
                               }
                             }
                           },

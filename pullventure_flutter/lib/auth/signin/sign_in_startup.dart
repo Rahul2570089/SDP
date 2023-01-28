@@ -30,14 +30,14 @@ class _SignInStartUpState extends State<SignInStartUp> {
     super.dispose();
   }
 
+  final formKey = GlobalKey<FormState>();
+  static TextEditingController email = TextEditingController();
+  static TextEditingController password = TextEditingController();
+  static TextEditingController name = TextEditingController();
+  static TextEditingController confirmPassword = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
-    TextEditingController email = TextEditingController();
-    TextEditingController password = TextEditingController();
-    TextEditingController name = TextEditingController();
-    TextEditingController confirmPassword = TextEditingController();
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(children: [
@@ -255,8 +255,11 @@ class _SignInStartUpState extends State<SignInStartUp> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            SignInStartUp2(name: name.text,email: email.text, password: password.text,)));
+                                        builder: (context) => SignInStartUp2(
+                                              name: name.text,
+                                              email: email.text,
+                                              password: password.text,
+                                            )));
                               }
                             }
                           },

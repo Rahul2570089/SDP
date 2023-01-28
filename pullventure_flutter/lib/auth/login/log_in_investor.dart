@@ -32,15 +32,16 @@ class _LogInInvestorState extends State<LogInInvestor> {
     super.dispose();
   }
 
+  final formKey = GlobalKey<FormState>();
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
-    TextEditingController email = TextEditingController();
-    TextEditingController password = TextEditingController();
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Stack(children: [
+      body: isLoading ? const Center(child: CircularProgressIndicator(),) : Stack(children: [
         Image.asset(
           "./assets/images/background.png",
           height: double.infinity,
@@ -185,6 +186,9 @@ class _LogInInvestorState extends State<LogInInvestor> {
                             if (formKey.currentState!.validate()) {
                               // AuthMethod.signinwithemailpassword(email.text, password.text, context).then((value)  {
                               // });
+                              setState(() {
+                                isLoading = true;
+                              });
                               List<Investor> list =
                                   await client.investor.readAll();
                               for (var i in list) {

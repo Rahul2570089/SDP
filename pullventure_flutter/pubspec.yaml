@@ -37,6 +37,7 @@ dependencies:
   cloud_firestore: ^4.3.1
   firebase_core: ^2.4.1
   firebase_storage: ^11.0.10
+  encrypt: ^5.0.1
   serverpod_auth_firebase_flutter: 0.9.21
 
 dev_dependencies:

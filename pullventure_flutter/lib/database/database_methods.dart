@@ -48,7 +48,7 @@ class DatabaseMethods {
     });
   }
 
-  addConversationMsg(String chatroomid, messagemap, BuildContext context) {
+  addConversationMsg(String chatroomid, messagemap) {
     FirebaseFirestore.instance
         .collection("chatroom")
         .doc(chatroomid)
