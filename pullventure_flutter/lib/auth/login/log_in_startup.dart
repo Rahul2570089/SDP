@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pullventure_client/pullventure_client.dart';
+import 'package:pullventure_flutter/auth/authenticate.dart';
 import 'package:pullventure_flutter/auth/signin/sign_in_startup.dart';
 import 'package:pullventure_flutter/chatscreen/homescreen_chat.dart';
 import 'package:pullventure_flutter/main.dart';
+import 'package:pullventure_flutter/model/Constants.dart';
 
 class LogInStartUp extends StatefulWidget {
   const LogInStartUp({super.key});
@@ -36,7 +38,7 @@ class _LogInStartUpState extends State<LogInStartUp> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   bool isLoading = false;
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -192,12 +194,12 @@ class _LogInStartUpState extends State<LogInStartUp> {
                             child: ElevatedButton(
                                 onPressed: () async {
                                   if (formKey.currentState!.validate()) {
-                                    // AuthMethod.signinwithemailpassword(
-                                    //         email.text, password.text, context)
-                                    //     .then((value) {});
                                     setState(() {
                                       isLoading = true;
                                     });
+                                    AuthMethod.signinwithemailpassword(
+                                        email.text, password.text, context);
+
                                     List<StartUp> list =
                                         await client.startUp.readAll();
                                     for (var i in list) {
@@ -208,12 +210,14 @@ class _LogInStartUpState extends State<LogInStartUp> {
                                             .showSnackBar(const SnackBar(
                                                 content:
                                                     Text("Login Successful")));
+                                        Constants.name = i.name;
                                         Navigator.pushAndRemoveUntil(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const ChatHomeScreen(
+                                                    ChatHomeScreen(
                                                       type: "startup",
+                                                      name: i.name,
                                                     )),
                                             (route) => false);
                                         return;
@@ -226,6 +230,9 @@ class _LogInStartUpState extends State<LogInStartUp> {
                                                     "Please enter correct credentials")));
                                       }
                                     }
+                                    setState(() {
+                                      isLoading = false;
+                                    });
                                     if (!mounted) return;
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(

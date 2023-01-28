@@ -4,7 +4,7 @@ import 'package:pullventure_flutter/database/database_methods.dart';
 import 'package:pullventure_flutter/encryption/abstract_encryption.dart';
 import 'package:pullventure_flutter/encryption/encryption_service.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:pullventure_flutter/model/constants.dart';
+import 'package:pullventure_flutter/model/Constants.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatroomid;
@@ -40,6 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget chatMessageTile(snapshot) {
     return ListView.builder(
         itemCount: (snapshot.data as QuerySnapshot).docs.length,
+        physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
           return MessageTile(
               encryptionService.decrypt(
@@ -68,29 +69,68 @@ class _ChatScreenState extends State<ChatScreen> {
           widget.user,
           style: const TextStyle(color: Colors.black),
         ),
-        backgroundColor: Colors.green[50],
-        elevation: 0.0,
-        shadowColor: Colors.transparent,
+        backgroundColor: Colors.white,
+        elevation: 0.3,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.green),
+        iconTheme: const IconThemeData(color: Colors.black),
+        titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20.0),
       ),
       body: Stack(
         children: [
-          StreamBuilder(builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasData) {
-              return chatMessageTile(snapshot);
-            } else if (!snapshot.hasData) {
-              return const Center(
-                child: Text("No messages"),
-              );
-            } else {
-              return const ScaffoldMessenger(child: Text("Some error occured"));
-            }
-          })
+          StreamBuilder(
+              stream: chatmsg,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasData) {
+                  return chatMessageTile(snapshot);
+                } else if (!snapshot.hasData) {
+                  return const Center(
+                    child: Text("No messages"),
+                  );
+                } else {
+                  return const ScaffoldMessenger(
+                      child: Text("Some error occured"));
+                }
+              }),
+          Container(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              color: const Color(0x54FFFFFF),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: TextField(
+                    controller: textEditingController,
+                    decoration: const InputDecoration(
+                      hintText: "Message",
+                      hintStyle: TextStyle(
+                        color: Colors.grey,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                  )),
+                  SizedBox(
+                    height: 40,
+                    width: 40,
+                    child: FloatingActionButton(
+                      elevation: 0.0,
+                      onPressed: () {
+                        sendMessages();
+                      },
+                      backgroundColor: Colors.amber[800],
+                      child: const Icon(
+                        Icons.send,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -117,11 +157,7 @@ class MessageTile extends StatelessWidget {
           minWidth: time.length.toDouble() * 15.5,
         ),
         decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: sender
-                  ? [Colors.green, Colors.green.shade400]
-                  : [Colors.white30, Colors.white70],
-            ),
+            color: sender ?Colors.amber[300] : Colors.amber[100],
             borderRadius: sender
                 ? const BorderRadius.only(
                     topLeft: Radius.circular(20),

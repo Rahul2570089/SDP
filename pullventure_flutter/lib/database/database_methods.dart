@@ -8,6 +8,20 @@ import 'package:flutter/material.dart';
 class DatabaseMethods {
   final firestore = FirebaseFirestore.instance;
 
+  getUserbyusername(String username, String type) async {
+    return await FirebaseFirestore.instance
+        .collection(type=="investor" ? "startups" : "investors")
+        .where("Name", isEqualTo: username)
+        .get();
+  }
+
+  getUserbyemail(String email, String type) async {
+    return await FirebaseFirestore.instance
+        .collection(type=="investor" ? "startups" : "investors")
+        .where("email", isEqualTo: email)
+        .get();
+  }
+
   Future addInvestor(info) async {
     await firestore.collection('investors').add(info);
   }
@@ -27,11 +41,17 @@ class DatabaseMethods {
   }
 
   Future<List<Map<String, dynamic>>> getAllInvestors() {
-    return firestore.collection('investors').get().then((value) => value.docs.map((e) => e.data()).toList());
+    return firestore
+        .collection('investors')
+        .get()
+        .then((value) => value.docs.map((e) => e.data()).toList());
   }
 
-  Future<List<Map<String, dynamic>>> getAllStartups() async{
-    return firestore.collection('startups').get().then((value) => value.docs.map((e) => e.data()).toList());
+  Future<List<Map<String, dynamic>>> getAllStartups() async {
+    return firestore
+        .collection('startups')
+        .get()
+        .then((value) => value.docs.map((e) => e.data()).toList());
   }
 
   createChatroom(String? roomid, chatroomMap, BuildContext context) {

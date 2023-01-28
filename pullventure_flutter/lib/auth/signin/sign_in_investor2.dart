@@ -5,6 +5,7 @@ import 'package:pullventure_flutter/auth/authenticate.dart';
 import 'package:pullventure_flutter/chatscreen/homescreen_chat.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
 import 'package:pullventure_flutter/main.dart';
+import 'package:pullventure_flutter/model/constants.dart';
 
 class SignInInvestor2 extends StatefulWidget {
   final String name;
@@ -361,12 +362,14 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                                   await client.investor
                                       .create(investor)
                                       .then((value) {
+                                    Constants.name = widget.name;
                                     Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const ChatHomeScreen(
+                                                ChatHomeScreen(
                                                   type: "investor",
+                                                  name: widget.name,
                                                 )),
                                         (route) => false);
                                   });

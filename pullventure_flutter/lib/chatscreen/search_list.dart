@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pullventure_flutter/chatscreen/chat_screen.dart';
 import 'package:pullventure_flutter/chatscreen/homescreen_chat.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
+import 'package:pullventure_flutter/model/Constants.dart';
 import 'package:pullventure_flutter/model/investor_model.dart';
 import 'package:pullventure_flutter/model/startup_model.dart';
 
@@ -15,6 +18,7 @@ class SearchList extends StatefulWidget {
 class _SearchListState extends State<SearchList> {
   TextEditingController searchController = TextEditingController();
   DatabaseMethods dataBaseMethods = DatabaseMethods();
+  QuerySnapshot? snapshot;
   List<InvestorModel> searchListInvestor = [], filterListInvestor = [];
   List<StartUpModel> searchListStartup = [], filterListStartup = [];
   bool isLoading = true;
@@ -48,6 +52,36 @@ class _SearchListState extends State<SearchList> {
     });
   }
 
+  createchatforconversation(String username) {
+    if (username != Constants.name) {
+      String chatroomid = getchatroomid(username, Constants.name);
+      List<String?> users = [username, Constants.name];
+      Map<String, dynamic> chatroommap = {
+        "users": users,
+        "chatroomid": chatroomid
+      };
+      dataBaseMethods.createChatroom(chatroomid, chatroommap, context);
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ChatScreen(chatroomid: chatroomid, user: username)));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("You cannot message yourself")));
+    }
+  }
+
+  String getchatroomid(String? a, String? b) {
+    if (a!.substring(0, 1).codeUnitAt(0) > b!.substring(0, 1).codeUnitAt(0)) {
+      // ignore: unnecessary_string_escapes
+      return "$b\_$a";
+    } else {
+      // ignore: unnecessary_string_escapes
+      return "$a\_$b";
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -58,57 +92,60 @@ class _SearchListState extends State<SearchList> {
     return ListView.builder(
       itemCount: list.length,
       itemBuilder: (context, index) {
-        return Container(
-          padding: const EdgeInsets.all(10.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                blurRadius: 7,
-                offset: const Offset(0, 3), // changes position of shadow
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 50.0,
-                    width: 50.0,
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(50.0),
+        return InkWell(
+          onTap: () => createchatforconversation(list[index].name),
+          child: Container(
+            padding: const EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  blurRadius: 7,
+                  offset: const Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      height: 50.0,
+                      width: 50.0,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10.0),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        list[index].name,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(width: 10.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          list[index].name,
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        list[index].email,
-                        style: const TextStyle(
-                          fontSize: 14.0,
-                          color: Colors.grey,
+                        Text(
+                          list[index].email,
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.grey,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const Divider(
-                thickness: 1,
-                indent: 55,
-              )
-            ],
+                      ],
+                    ),
+                  ],
+                ),
+                const Divider(
+                  thickness: 1,
+                  indent: 55,
+                )
+              ],
+            ),
           ),
         );
       },
@@ -150,7 +187,7 @@ class _SearchListState extends State<SearchList> {
                                   .toList();
                             }
                             show = true;
-                            if(value.isEmpty) show = false;
+                            if (value.isEmpty) show = false;
                           })
                         }),
                     controller: searchController,
