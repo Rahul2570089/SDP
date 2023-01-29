@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
 import 'package:pullventure_flutter/encryption/abstract_encryption.dart';
 import 'package:pullventure_flutter/encryption/encryption_service.dart';
@@ -9,7 +13,12 @@ import 'package:pullventure_flutter/model/Constants.dart';
 class ChatScreen extends StatefulWidget {
   final String chatroomid;
   final String user;
-  const ChatScreen({super.key, required this.chatroomid, required this.user});
+  final String token;
+  const ChatScreen(
+      {super.key,
+      required this.chatroomid,
+      required this.user,
+      required this.token});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -33,7 +42,26 @@ class _ChatScreenState extends State<ChatScreen> {
         "timeOrder": DateTime.now().millisecondsSinceEpoch,
       };
       dataBaseMethods.addConversationMsg(widget.chatroomid, msgmap);
+      sendPushNotification(widget.token, textEditingController.text);
       textEditingController.text = "";
+    }
+  }
+
+  sendPushNotification(token, message) async {
+    try {
+      var url = Uri.parse('https://fcm.googleapis.com/fcm/send');
+      var body = {
+        'to': token,
+        'notification': {'title': Constants.name, 'body': message}
+      };
+      var headers = {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader:
+            'key=AAAA6dZtjxA:APA91bE-FDq8IIiBe1oagOf1UqacOYHQ7FTpQighWyhbyr1KBCvNS50ixg-FdxFjaGGJvKNly2TS_Xg2y7_m5E1DE_2Q_cQeRiNOYrdbMm3t15PnWDNiJdEGipuESTa7xWLWpNYNBsBk'
+      };
+      var response = await post(url, headers: headers, body: jsonEncode(body));
+    } on Exception catch (e) {
+      log(e.toString());
     }
   }
 
@@ -157,7 +185,7 @@ class MessageTile extends StatelessWidget {
           minWidth: time.length.toDouble() * 15.5,
         ),
         decoration: BoxDecoration(
-            color: sender ?Colors.amber[300] : Colors.amber[100],
+            color: sender ? Colors.amber[300] : Colors.amber[100],
             borderRadius: sender
                 ? const BorderRadius.only(
                     topLeft: Radius.circular(20),

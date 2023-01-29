@@ -217,7 +217,7 @@ class _LogInStartUpState extends State<LogInStartUp> {
                                                 builder: (context) =>
                                                     ChatHomeScreen(
                                                       type: "startup",
-                                                      name: i.name,
+                                                      email: i.email,
                                                     )),
                                             (route) => false);
                                         return;

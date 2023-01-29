@@ -381,6 +381,7 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
                                               companyHeadquarters.text,
                                           "description": basicDescription.text,
                                           "sector": selected,
+                                          "token": ''
                                         });
                                         final startup = StartUp(
                                           name: widget.name,
@@ -403,7 +404,7 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
                                                     builder: (context) =>
                                                         ChatHomeScreen(
                                                           type: "startup",
-                                                          name: widget.name,
+                                                          email: widget.email,
                                                         )),
                                                 (route) => false);
                                           });

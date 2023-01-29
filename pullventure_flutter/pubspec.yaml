@@ -38,6 +38,8 @@ dependencies:
   firebase_core: ^2.4.1
   firebase_storage: ^11.0.10
   encrypt: ^5.0.1
+  firebase_messaging: ^14.2.1
+  http: ^0.13.5
   serverpod_auth_firebase_flutter: 0.9.21
 
 dev_dependencies:

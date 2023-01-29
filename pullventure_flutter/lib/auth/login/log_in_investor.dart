@@ -217,7 +217,7 @@ class _LogInInvestorState extends State<LogInInvestor> {
                                                 builder: (context) =>
                                                     ChatHomeScreen(
                                                       type: "investor",
-                                                      name: i.name,
+                                                      email: i.email,
                                                     )),
                                             (route) => false);
                                         return;

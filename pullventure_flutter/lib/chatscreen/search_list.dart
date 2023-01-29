@@ -9,7 +9,8 @@ import 'package:pullventure_flutter/model/startup_model.dart';
 
 class SearchList extends StatefulWidget {
   final String type;
-  const SearchList({super.key, required this.type});
+  final String token;
+  const SearchList({super.key, required this.type, required this.token});
 
   @override
   State<SearchList> createState() => _SearchListState();
@@ -65,7 +66,7 @@ class _SearchListState extends State<SearchList> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  ChatScreen(chatroomid: chatroomid, user: username)));
+                  ChatScreen(chatroomid: chatroomid, user: username, token: widget.token,)));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("You cannot message yourself")));

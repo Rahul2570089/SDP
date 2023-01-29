@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:pullventure_flutter/chatscreen/chat_screen.dart';
 import 'package:pullventure_flutter/chatscreen/search_list.dart';
@@ -7,9 +8,9 @@ import 'package:pullventure_flutter/model/Constants.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
 
 class ChatHomeScreen extends StatefulWidget {
-  final String name;
+  final String email;
   final String type;
-  const ChatHomeScreen({super.key, required this.type, required this.name});
+  const ChatHomeScreen({super.key, required this.type, required this.email});
 
   @override
   State<ChatHomeScreen> createState() => _ChatHomeScreenState();
@@ -23,15 +24,30 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   Stream? chatroom;
   bool showSearchList = false;
   int popUpVal = 0;
+  FirebaseMessaging message = FirebaseMessaging.instance;
+  String token="";
 
   @override
   void initState() {
-    getuserinfo();
+    getuserinfo(); 
     super.initState();
+  }
+
+  getFirebaseMessagingToken() async {
+    await message.requestPermission();
+
+    await message.getToken().then((value) {
+      if(value != null) {
+        token = value;
+        dataBaseMethods.updateInvestorWithToken(value, widget.email, widget.type);
+      }
+    });
   }
 
   getuserinfo() async {
     // constants.name= (await helpermethod.getusernameloggedinsharedpreference());
+    await getFirebaseMessagingToken();
+    print(dataBaseMethods.getUserTokenbyEmail(widget.email, widget.type));
     dataBaseMethods.getChatRoom(Constants.name).then((value) {
       setState(() {
         chatroom = value;
@@ -54,7 +70,8 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                               .toString()
                               .replaceAll("_", "")
                               .replaceAll(Constants.name!, ""),
-                          chatroomid: (list).docs[index]["chatroomid"])));
+                          chatroomid: (list).docs[index]["chatroomid"],
+                          token: token,)));
             },
             child: Container(
               padding: const EdgeInsets.all(10.0),
@@ -237,6 +254,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
               MaterialPageRoute(
                   builder: (context) => SearchList(
                         type: widget.type,
+                        token: token,
                       )));
         },
         backgroundColor: Colors.amber[800],

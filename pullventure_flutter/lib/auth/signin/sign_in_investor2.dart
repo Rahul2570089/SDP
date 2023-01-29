@@ -353,6 +353,7 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                                     "aboutcompany": aboutCompany.text,
                                     "mobilenumber": mobileNumber.text,
                                     "investmentsector": selected,
+                                    "token": ''
                                   });
                                   final investor = Investor(
                                     name: widget.name,
@@ -369,7 +370,7 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                                             builder: (context) =>
                                                 ChatHomeScreen(
                                                   type: "investor",
-                                                  name: widget.name,
+                                                  email: widget.email,
                                                 )),
                                         (route) => false);
                                   });

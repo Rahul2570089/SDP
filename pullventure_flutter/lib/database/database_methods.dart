@@ -10,16 +10,18 @@ class DatabaseMethods {
 
   getUserbyusername(String username, String type) async {
     return await FirebaseFirestore.instance
-        .collection(type=="investor" ? "startups" : "investors")
+        .collection(type == "startup" ? "startups" : "investors")
         .where("Name", isEqualTo: username)
         .get();
   }
 
-  getUserbyemail(String email, String type) async {
+  getUserTokenbyEmail(String email, String type) async {
     return await FirebaseFirestore.instance
-        .collection(type=="investor" ? "startups" : "investors")
+        .collection(type == "startup" ? "startups" : "investors")
         .where("email", isEqualTo: email)
-        .get();
+        .get().then((value) {
+          return value.docs.first['token'];
+        });
   }
 
   Future addInvestor(info) async {
@@ -28,6 +30,19 @@ class DatabaseMethods {
 
   Future addStartup(info) async {
     await firestore.collection('startups').add(info);
+  }
+
+  Future updateInvestorWithToken(token, email, type) async {
+    final v = await FirebaseFirestore.instance.collection(type=="investor" ? "investors" : "startups").get();
+    for (var element in v.docs) {
+      if (element.data()['email'] == email) {
+        FirebaseFirestore.instance
+            .collection(type=="investor" ? "investors" : "startups")
+            .doc(element.id)
+            .update({"token": token});
+        return;
+      }
+    }
   }
 
   Future uploadLogo(BuildContext context,
