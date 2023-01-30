@@ -17,7 +17,7 @@ class DatabaseMethods {
 
   getUserTokenbyEmail(String email, String type) async {
     return await FirebaseFirestore.instance
-        .collection(type == "startup" ? "startups" : "investors")
+        .collection(type == "startup" ? "investors" : "startups")
         .where("email", isEqualTo: email)
         .get().then((value) {
           return value.docs.first['token'];

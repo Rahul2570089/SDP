@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:pullventure_flutter/auth/authenticate.dart';
 import 'package:pullventure_flutter/chatscreen/chat_screen.dart';
 import 'package:pullventure_flutter/chatscreen/search_list.dart';
 import 'package:pullventure_flutter/main.dart';
@@ -25,11 +26,10 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   bool showSearchList = false;
   int popUpVal = 0;
   FirebaseMessaging message = FirebaseMessaging.instance;
-  String token="";
 
   @override
   void initState() {
-    getuserinfo(); 
+    getuserinfo();
     super.initState();
   }
 
@@ -37,9 +37,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
     await message.requestPermission();
 
     await message.getToken().then((value) {
-      if(value != null) {
-        token = value;
-        dataBaseMethods.updateInvestorWithToken(value, widget.email, widget.type);
+      if (value != null) {
+        dataBaseMethods.updateInvestorWithToken(
+            value, widget.email, widget.type);
       }
     });
   }
@@ -47,7 +47,6 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   getuserinfo() async {
     // constants.name= (await helpermethod.getusernameloggedinsharedpreference());
     await getFirebaseMessagingToken();
-    print(dataBaseMethods.getUserTokenbyEmail(widget.email, widget.type));
     dataBaseMethods.getChatRoom(Constants.name).then((value) {
       setState(() {
         chatroom = value;
@@ -65,13 +64,15 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => ChatScreen(
-                          user: (list as QuerySnapshot)
-                              .docs[index]["chatroomid"]
-                              .toString()
-                              .replaceAll("_", "")
-                              .replaceAll(Constants.name!, ""),
-                          chatroomid: (list).docs[index]["chatroomid"],
-                          token: token,)));
+                            user: (list as QuerySnapshot)
+                                .docs[index]["chatroomid"]
+                                .toString()
+                                .replaceAll("_", "")
+                                .replaceAll(Constants.name!, ""),
+                            email: widget.email == (list).docs[index]['emails'][0] ? (list).docs[index]['emails'][1] : (list).docs[index]['emails'][0],
+                            chatroomid: (list).docs[index]["chatroomid"],
+                            type: widget.type,
+                          )));
             },
             child: Container(
               padding: const EdgeInsets.all(10.0),
@@ -150,6 +151,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
               position: PopupMenuPosition.under,
               onSelected: (value) {
                 if (value == 1) {
+                  AuthMethod.signout(context);
                   Constants.name = "";
                   Navigator.pushReplacement(
                       context,
@@ -165,8 +167,11 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
               itemBuilder: (context) {
                 return [
                   PopupMenuItem(
-                      onTap: () {}, value: 0, child: const Text("View profile")),
-                  PopupMenuItem(onTap: () {}, value: 1, child: const Text("Sign out")),
+                      onTap: () {},
+                      value: 0,
+                      child: const Text("View profile")),
+                  PopupMenuItem(
+                      onTap: () {}, value: 1, child: const Text("Sign out")),
                 ];
               })
         ],
@@ -253,8 +258,8 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
               context,
               MaterialPageRoute(
                   builder: (context) => SearchList(
+                        email: widget.email,
                         type: widget.type,
-                        token: token,
                       )));
         },
         backgroundColor: Colors.amber[800],

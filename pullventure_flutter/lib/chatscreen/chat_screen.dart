@@ -13,12 +13,14 @@ import 'package:pullventure_flutter/model/Constants.dart';
 class ChatScreen extends StatefulWidget {
   final String chatroomid;
   final String user;
-  final String token;
+  final String email;
+  final String type;
   const ChatScreen(
       {super.key,
       required this.chatroomid,
       required this.user,
-      required this.token});
+      required this.email,
+      required this.type});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -30,6 +32,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Stream? chatmsg;
   AbstractEncryption encryptionService = EncryptionService(encrypt.Encrypter(
       encrypt.AES(encrypt.Key.fromLength(32), padding: null)));
+  String token="";
 
   sendMessages() {
     if (textEditingController.text.isNotEmpty) {
@@ -42,7 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
         "timeOrder": DateTime.now().millisecondsSinceEpoch,
       };
       dataBaseMethods.addConversationMsg(widget.chatroomid, msgmap);
-      sendPushNotification(widget.token, textEditingController.text);
+      sendPushNotification(token, textEditingController.text);
       textEditingController.text = "";
     }
   }
@@ -60,6 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
             'key=AAAA6dZtjxA:APA91bE-FDq8IIiBe1oagOf1UqacOYHQ7FTpQighWyhbyr1KBCvNS50ixg-FdxFjaGGJvKNly2TS_Xg2y7_m5E1DE_2Q_cQeRiNOYrdbMm3t15PnWDNiJdEGipuESTa7xWLWpNYNBsBk'
       };
       var response = await post(url, headers: headers, body: jsonEncode(body));
+      log(response.statusCode.toString());
     } on Exception catch (e) {
       log(e.toString());
     }
@@ -79,15 +83,21 @@ class _ChatScreenState extends State<ChatScreen> {
         });
   }
 
+  getToken() async {
+    token = await dataBaseMethods.getUserTokenbyEmail(widget.email, widget.type);
+  }
+
   @override
   void initState() {
     super.initState();
+    getToken();
     dataBaseMethods.getConversationMsg(widget.chatroomid).then((val) {
       setState(() {
         chatmsg = val;
       });
     });
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -9,8 +9,8 @@ import 'package:pullventure_flutter/model/startup_model.dart';
 
 class SearchList extends StatefulWidget {
   final String type;
-  final String token;
-  const SearchList({super.key, required this.type, required this.token});
+  final String email;
+  const SearchList({super.key, required this.type, required this.email});
 
   @override
   State<SearchList> createState() => _SearchListState();
@@ -24,6 +24,8 @@ class _SearchListState extends State<SearchList> {
   List<StartUpModel> searchListStartup = [], filterListStartup = [];
   bool isLoading = true;
   bool show = false;
+  String token = "";
+
 
   getUser() async {
     if (widget.type == "investor") {
@@ -53,20 +55,22 @@ class _SearchListState extends State<SearchList> {
     });
   }
 
-  createchatforconversation(String username) {
+  createchatforconversation(String username, String email) {
     if (username != Constants.name) {
       String chatroomid = getchatroomid(username, Constants.name);
       List<String?> users = [username, Constants.name];
+      List<String?> emails = [email, widget.email];
       Map<String, dynamic> chatroommap = {
         "users": users,
-        "chatroomid": chatroomid
+        "chatroomid": chatroomid,
+        "emails": emails 
       };
       dataBaseMethods.createChatroom(chatroomid, chatroommap, context);
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  ChatScreen(chatroomid: chatroomid, user: username, token: widget.token,)));
+                  ChatScreen(chatroomid: chatroomid, user: username, email: email, type: widget.type)));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("You cannot message yourself")));
@@ -94,7 +98,7 @@ class _SearchListState extends State<SearchList> {
       itemCount: list.length,
       itemBuilder: (context, index) {
         return InkWell(
-          onTap: () => createchatforconversation(list[index].name),
+          onTap: () => createchatforconversation(list[index].name, list[index].email),
           child: Container(
             padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
