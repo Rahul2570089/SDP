@@ -32,7 +32,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Stream? chatmsg;
   AbstractEncryption encryptionService = EncryptionService(encrypt.Encrypter(
       encrypt.AES(encrypt.Key.fromLength(32), padding: null)));
-  String token="";
+  String token = "";
 
   sendMessages() {
     if (textEditingController.text.isNotEmpty) {
@@ -55,7 +55,11 @@ class _ChatScreenState extends State<ChatScreen> {
       var url = Uri.parse('https://fcm.googleapis.com/fcm/send');
       var body = {
         'to': token,
-        'notification': {'title': Constants.name, 'body': message}
+        'notification': {
+          'title': '${Constants.name} - ${widget.type.toUpperCase()}',
+          'body': message,
+          'android_channel_id': 'pullventure_chat'
+        }
       };
       var headers = {
         HttpHeaders.contentTypeHeader: 'application/json',
@@ -84,7 +88,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   getToken() async {
-    token = await dataBaseMethods.getUserTokenbyEmail(widget.email, widget.type);
+    token =
+        await dataBaseMethods.getUserTokenbyEmail(widget.email, widget.type);
   }
 
   @override
@@ -97,7 +102,6 @@ class _ChatScreenState extends State<ChatScreen> {
       });
     });
   }
-
 
   @override
   Widget build(BuildContext context) {

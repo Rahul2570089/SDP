@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +44,15 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
             value, widget.email, widget.type);
       }
     });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      log('Got a message whilst in the foreground!');
+      log('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        log('Message also contained a notification: ${message.notification}');
+      }
+    });
   }
 
   getuserinfo() async {
@@ -69,7 +80,10 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                                 .toString()
                                 .replaceAll("_", "")
                                 .replaceAll(Constants.name!, ""),
-                            email: widget.email == (list).docs[index]['emails'][0] ? (list).docs[index]['emails'][1] : (list).docs[index]['emails'][0],
+                            email:
+                                widget.email == (list).docs[index]['emails'][0]
+                                    ? (list).docs[index]['emails'][1]
+                                    : (list).docs[index]['emails'][0],
                             chatroomid: (list).docs[index]["chatroomid"],
                             type: widget.type,
                           )));

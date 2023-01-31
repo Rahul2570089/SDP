@@ -1,4 +1,8 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_notification_channel/flutter_notification_channel.dart';
+import 'package:flutter_notification_channel/notification_importance.dart';
 import 'package:pullventure_client/pullventure_client.dart';
 import 'package:flutter/material.dart';
 import 'package:pullventure_flutter/auth/sign_in_choice.dart';
@@ -15,6 +19,13 @@ var client = Client('http://10.0.2.2:8080/')
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  var result = await FlutterNotificationChannel.registerNotificationChannel(
+    description: 'For showing message notifications',
+    id: 'pullventure_chat',
+    importance: NotificationImportance.IMPORTANCE_HIGH,
+    name: 'Chats',
+  );
+  log(result);
   runApp(const MyApp());
 }
 
