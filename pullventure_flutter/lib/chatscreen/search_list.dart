@@ -22,10 +22,10 @@ class _SearchListState extends State<SearchList> {
   QuerySnapshot? snapshot;
   List<InvestorModel> searchListInvestor = [], filterListInvestor = [];
   List<StartUpModel> searchListStartup = [], filterListStartup = [];
+  Map<String, String> downloadUrls = {};
   bool isLoading = true;
   bool show = false;
   String token = "";
-
 
   getUser() async {
     if (widget.type == "investor") {
@@ -50,6 +50,13 @@ class _SearchListState extends State<SearchList> {
             aboutCompany: element['aboutcompany']));
       }
     }
+    await dataBaseMethods
+        .getAllLogos(widget.type == "investor" ? "startups" : "investors")
+        .then((value) {
+      setState(() {
+        downloadUrls = value;
+      });
+    });
     setState(() {
       isLoading = false;
     });
@@ -63,14 +70,17 @@ class _SearchListState extends State<SearchList> {
       Map<String, dynamic> chatroommap = {
         "users": users,
         "chatroomid": chatroomid,
-        "emails": emails 
+        "emails": emails
       };
       dataBaseMethods.createChatroom(chatroomid, chatroommap, context);
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  ChatScreen(chatroomid: chatroomid, user: username, email: email, type: widget.type)));
+              builder: (context) => ChatScreen(
+                  chatroomid: chatroomid,
+                  user: username,
+                  email: email,
+                  type: widget.type)));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("You cannot message yourself")));
@@ -97,8 +107,10 @@ class _SearchListState extends State<SearchList> {
     return ListView.builder(
       itemCount: list.length,
       itemBuilder: (context, index) {
+        String url = list[index].email;
         return InkWell(
-          onTap: () => createchatforconversation(list[index].name, list[index].email),
+          onTap: () =>
+              createchatforconversation(list[index].name, list[index].email),
           child: Container(
             padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
@@ -121,6 +133,14 @@ class _SearchListState extends State<SearchList> {
                       decoration: BoxDecoration(
                         color: Colors.grey,
                         borderRadius: BorderRadius.circular(50.0),
+                      ),
+                      child: ClipOval(
+                        child: Image.network(
+                          downloadUrls['${url}_photo'] ?? '',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.account_circle),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10.0),

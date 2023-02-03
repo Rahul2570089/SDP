@@ -392,7 +392,7 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
                                             .uploadLogo(context,
                                                 image: _image,
                                                 email: widget.email,
-                                                type: "startup")
+                                                type: "startups")
                                             .then((value) async {
                                           await client.startUp
                                               .create(startup)

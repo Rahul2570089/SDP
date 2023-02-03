@@ -24,6 +24,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   TextEditingController searchController = TextEditingController();
   DatabaseMethods dataBaseMethods = DatabaseMethods();
   List<Map<String, dynamic>> searchChat = [];
+  Map<String, String> downloadUrls = {};
   Stream? chatroom;
   bool showSearchList = false;
   int popUpVal = 0;
@@ -56,11 +57,18 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   }
 
   getuserinfo() async {
-    // constants.name= (await helpermethod.getusernameloggedinsharedpreference());
     await getFirebaseMessagingToken();
     dataBaseMethods.getChatRoom(Constants.name).then((value) {
       setState(() {
         chatroom = value;
+      });
+    });
+
+    await dataBaseMethods
+        .getAllLogos(widget.type == "investor" ? "startups" : "investors")
+        .then((value) {
+      setState(() {
+        downloadUrls = value;
       });
     });
   }
@@ -69,6 +77,10 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
     return ListView.builder(
         itemCount: isList ? list.length : (list as QuerySnapshot).docs.length,
         itemBuilder: (context, index) {
+          String url = widget.email ==
+                  (list).docs[index]['emails'][0].toString().split("_")[0]
+              ? (list).docs[index]['emails'][1].toString().split("_")[0]
+              : (list).docs[index]['emails'][0].toString().split("_")[0];
           return InkWell(
             onTap: () {
               Navigator.push(
@@ -112,6 +124,14 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                           color: Colors.grey,
                           borderRadius: BorderRadius.circular(50.0),
                         ),
+                        child: ClipOval(
+                          child: Image.network(
+                            downloadUrls['${url}_photo'] ?? '',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.account_circle),
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 10.0),
                       Column(
@@ -128,13 +148,6 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                             style: const TextStyle(
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Last message $index',
-                            style: const TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.grey,
                             ),
                           ),
                         ],
@@ -164,7 +177,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
           PopupMenuButton(
               position: PopupMenuPosition.under,
               onSelected: (value) {
-                if (value == 1) {
+                if (value == 2) {
                   AuthMethod.signout(context);
                   Constants.name = "";
                   Navigator.pushReplacement(
@@ -185,7 +198,11 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                       value: 0,
                       child: const Text("View profile")),
                   PopupMenuItem(
-                      onTap: () {}, value: 1, child: const Text("Sign out")),
+                      onTap: () {},
+                      value: 1,
+                      child: const Text("View pending requests")),
+                  PopupMenuItem(
+                      onTap: () {}, value: 2, child: const Text("Sign out")),
                 ];
               })
         ],
