@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:pullventure_client/pullventure_client.dart';
 import 'package:pullventure_flutter/auth/authenticate.dart';
 import 'package:pullventure_flutter/auth/signin/sign_in_startup.dart';
-import 'package:pullventure_flutter/chatscreen/homescreen_chat.dart';
+import 'package:pullventure_flutter/homepages/chatscreen/homescreen_chat.dart';
 import 'package:pullventure_flutter/main.dart';
 import 'package:pullventure_flutter/model/Constants.dart';
 

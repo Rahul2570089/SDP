@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pullventure_flutter/chatscreen/chat_screen.dart';
-import 'package:pullventure_flutter/chatscreen/homescreen_chat.dart';
+import 'package:pullventure_flutter/homepages/chatscreen/homescreen_chat.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
-import 'package:pullventure_flutter/model/Constants.dart';
+import 'package:pullventure_flutter/homepages/profiles/investor_profile.dart';
+import 'package:pullventure_flutter/homepages/profiles/startup_profile.dart';
 import 'package:pullventure_flutter/model/investor_model.dart';
 import 'package:pullventure_flutter/model/startup_model.dart';
 
@@ -62,40 +62,6 @@ class _SearchListState extends State<SearchList> {
     });
   }
 
-  createchatforconversation(String username, String email) {
-    if (username != Constants.name) {
-      String chatroomid = getchatroomid(username, Constants.name);
-      List<String?> users = [username, Constants.name];
-      List<String?> emails = [email, widget.email];
-      Map<String, dynamic> chatroommap = {
-        "users": users,
-        "chatroomid": chatroomid,
-        "emails": emails
-      };
-      dataBaseMethods.createChatroom(chatroomid, chatroommap, context);
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ChatScreen(
-                  chatroomid: chatroomid,
-                  user: username,
-                  email: email,
-                  type: widget.type)));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("You cannot message yourself")));
-    }
-  }
-
-  String getchatroomid(String? a, String? b) {
-    if (a!.substring(0, 1).codeUnitAt(0) > b!.substring(0, 1).codeUnitAt(0)) {
-      // ignore: unnecessary_string_escapes
-      return "$b\_$a";
-    } else {
-      // ignore: unnecessary_string_escapes
-      return "$a\_$b";
-    }
-  }
 
   @override
   void initState() {
@@ -109,8 +75,12 @@ class _SearchListState extends State<SearchList> {
       itemBuilder: (context, index) {
         String url = list[index].email;
         return InkWell(
-          onTap: () =>
-              createchatforconversation(list[index].name, list[index].email),
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => widget.type == 'investor'
+                      ? StartupProfile(imgUrl: downloadUrls['${url}_photo'] ?? '', email: widget.email ,startupModel: list[index],)
+                      : InvestorProfile(imgUrl: downloadUrls['${url}_photo'] ?? '', email: widget.email ,investorModel: list[index],))),
           child: Container(
             padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
