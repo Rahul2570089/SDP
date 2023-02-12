@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:pullventure_flutter/auth/authenticate.dart';
+import 'package:pullventure_flutter/homepages/association/pending_request.dart';
 import 'package:pullventure_flutter/homepages/chatscreen/chat_screen.dart';
 import 'package:pullventure_flutter/homepages/chatscreen/search_list.dart';
 import 'package:pullventure_flutter/main.dart';
@@ -117,21 +118,16 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        height: 50.0,
-                        width: 50.0,
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(50.0),
-                        ),
-                        child: ClipOval(
-                          child: Image.network(
-                            downloadUrls['${url}_photo'] ?? '',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.account_circle),
-                          ),
-                        ),
+                      ClipOval(
+                        child: downloadUrls['${url}_photo'] == null
+                            ? const Icon(Icons.account_circle, size: 50)
+                            : Image.network(
+                                downloadUrls['${url}_photo'] ?? '',
+                                width: 50.0,
+                                height: 50.0,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.account_circle, size: 50),
+                              ),
                       ),
                       const SizedBox(width: 10.0),
                       Column(
@@ -184,6 +180,12 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => const MyApp(),
+                      ));
+                } else if (value == 1) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PendingRequest(type: widget.type, email: widget.email),
                       ));
                 }
               },

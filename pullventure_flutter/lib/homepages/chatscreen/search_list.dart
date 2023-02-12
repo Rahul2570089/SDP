@@ -97,20 +97,13 @@ class _SearchListState extends State<SearchList> {
               children: [
                 Row(
                   children: [
-                    Container(
-                      height: 50.0,
-                      width: 50.0,
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                      child: ClipOval(
-                        child: Image.network(
-                          downloadUrls['${url}_photo'] ?? '',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.account_circle),
-                        ),
+                    ClipOval(
+                      child: downloadUrls['${url}_photo']=='' ? const Icon(Icons.account_circle, size: 50) : Image.network(
+                        downloadUrls['${url}_photo'] ?? '',
+                        width: 50.0,
+                        height: 50.0,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.account_circle, size: 50.0),
                       ),
                     ),
                     const SizedBox(width: 10.0),

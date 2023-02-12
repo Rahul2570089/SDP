@@ -1,4 +1,9 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
 import 'package:pullventure_flutter/homepages/chatscreen/chat_screen.dart';
 import 'package:pullventure_flutter/model/Constants.dart';
@@ -21,8 +26,38 @@ class InvestorProfile extends StatefulWidget {
 }
 
 class _InvestorProfileState extends State<InvestorProfile> {
-
   DatabaseMethods dataBaseMethods = DatabaseMethods();
+  TextEditingController messageController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
+  String token = "";
+
+  getToken() async {
+    token = await dataBaseMethods.getUserTokenbyEmail(
+        widget.investorModel.email!, "startup");
+  }
+
+  sendPushNotification(token, message, amount) async {
+    try {
+      var url = Uri.parse('https://fcm.googleapis.com/fcm/send');
+      var body = {
+        'to': token,
+        'notification': {
+          'title': '${Constants.name} - STARTUP',
+          'body': "INVESTED AMOUNT: $amount, $message",
+          'android_channel_id': 'pullventure_chat'
+        }
+      };
+      var headers = {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader:
+            'key=AAAA6dZtjxA:APA91bE-FDq8IIiBe1oagOf1UqacOYHQ7FTpQighWyhbyr1KBCvNS50ixg-FdxFjaGGJvKNly2TS_Xg2y7_m5E1DE_2Q_cQeRiNOYrdbMm3t15PnWDNiJdEGipuESTa7xWLWpNYNBsBk'
+      };
+      var response = await post(url, headers: headers, body: jsonEncode(body));
+      log(response.statusCode.toString());
+    } on Exception catch (e) {
+      log(e.toString());
+    }
+  }
 
   createchatforconversation(String username, String email) {
     if (username != Constants.name) {
@@ -60,6 +95,12 @@ class _InvestorProfileState extends State<InvestorProfile> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    getToken();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -68,6 +109,64 @@ class _InvestorProfileState extends State<InvestorProfile> {
         elevation: 0.3,
         centerTitle: true,
         titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20.0),
+        iconTheme: const IconThemeData(color: Colors.black),
+        actions: [
+          IconButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Send association request"),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            controller: amountController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              hintText: "Enter invested amount",
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          TextField(
+                            controller: messageController,
+                            maxLines: 5,
+                            decoration: const InputDecoration(
+                              hintText: "Enter your message",
+                            ),
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            dataBaseMethods.addFriendRequest("startup",
+                                currentName: Constants.name!,
+                                name: widget.investorModel.name!,
+                                currentEmail: widget.email,
+                                email: widget.investorModel.email!,
+                                amount: amountController.text,
+                                message: messageController.text);
+                            sendPushNotification(token, messageController.text, amountController.text);
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Send request"),
+                        ),
+                      ],
+                    );
+                  });
+            },
+            icon: Image.asset("assets/images/add-friend.png",
+                width: 25, height: 25),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -233,7 +332,8 @@ class _InvestorProfileState extends State<InvestorProfile> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () => createchatforconversation(widget.investorModel.name!, widget.investorModel.email!),
+          onPressed: () => createchatforconversation(
+              widget.investorModel.name!, widget.investorModel.email!),
           backgroundColor: Colors.amber[800],
           child: const Icon(Icons.message)),
     );

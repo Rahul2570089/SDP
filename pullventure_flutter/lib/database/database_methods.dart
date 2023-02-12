@@ -8,15 +8,15 @@ import 'package:flutter/material.dart';
 class DatabaseMethods {
   final firestore = FirebaseFirestore.instance;
 
-  getUserbyusername(String username, String type) async {
-    return await FirebaseFirestore.instance
+  Future getUserbyusername(String username, String type) async {
+    return await firestore
         .collection(type == "startup" ? "startups" : "investors")
         .where("Name", isEqualTo: username)
         .get();
   }
 
-  getUserTokenbyEmail(String email, String type) async {
-    return await FirebaseFirestore.instance
+  Future getUserTokenbyEmail(String email, String type) async {
+    return await firestore
         .collection(type == "startup" ? "investors" : "startups")
         .where("email", isEqualTo: email)
         .get()
@@ -34,12 +34,12 @@ class DatabaseMethods {
   }
 
   Future updateInvestorWithToken(token, email, type) async {
-    final v = await FirebaseFirestore.instance
+    final v = await firestore
         .collection(type == "investor" ? "investors" : "startups")
         .get();
     for (var element in v.docs) {
       if (element.data()['email'] == email) {
-        FirebaseFirestore.instance
+        firestore
             .collection(type == "investor" ? "investors" : "startups")
             .doc(element.id)
             .update({"token": token});
@@ -85,7 +85,7 @@ class DatabaseMethods {
   }
 
   createChatroom(String? roomid, chatroomMap, BuildContext context) {
-    FirebaseFirestore.instance
+    firestore
         .collection("chatroom")
         .doc(roomid)
         .set(chatroomMap)
@@ -99,15 +99,15 @@ class DatabaseMethods {
   }
 
   addConversationMsg(String chatroomid, messagemap) {
-    FirebaseFirestore.instance
+    firestore
         .collection("chatroom")
         .doc(chatroomid)
         .collection("chats")
         .add(messagemap);
   }
 
-  getConversationMsg(String chatroomid) async {
-    return FirebaseFirestore.instance
+  Future getConversationMsg(String chatroomid) async {
+    return firestore
         .collection("chatroom")
         .doc(chatroomid)
         .collection("chats")
@@ -115,10 +115,119 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  getChatRoom(String? username) async {
-    return FirebaseFirestore.instance
+  Future getChatRoom(String? username) async {
+    return firestore
         .collection("chatroom")
         .where("users", arrayContains: username)
         .snapshots();
+  }
+
+  addFriendRequest(String type,
+      {required String currentName,
+      required String name,
+      required String currentEmail,
+      required String email,
+      required String amount,
+      required String message}) async {
+    if (type == "investor") {
+      await firestore
+          .collection("investors")
+          .where("email", isEqualTo: currentEmail)
+          .get()
+          .then((value) {
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .add({
+          "name": name,
+          "email": email,
+          "amount": amount,
+          "message": message,
+          "status": "pending"
+        });
+      });
+
+      await firestore
+          .collection("startups")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) {
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .add({
+          "name": currentName,
+          "email": currentEmail,
+          "amount": amount,
+          "message": message,
+          "status": "pending"
+        });
+      });
+    } else {
+      await firestore
+          .collection("startups")
+          .where("email", isEqualTo: currentEmail)
+          .get()
+          .then((value) {
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .add({
+          "name": name,
+          "email": email,
+          "amount": amount,
+          "message": message,
+          "status": "pending"
+        });
+      });
+
+      await firestore
+          .collection("investors")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) {
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .add({
+          "name": currentName,
+          "email": currentEmail,
+          "amount": amount,
+          "message": message,
+          "sender": currentEmail,
+          "status": "pending"
+        });
+      });
+    }
+  }
+
+  Future getFriendRequests(String type, String email) async {
+    if (type == "investor") {
+      final v = await firestore
+          .collection("investors")
+          .where("email", isEqualTo: email)
+          .get();
+      return firestore
+          .collection("investors")
+          .doc(v.docs.first.id)
+          .collection("friendlist")
+          .where("status", isEqualTo: "pending")
+          .snapshots();
+    } else {
+      final v = await firestore
+          .collection("startups")
+          .where("email", isEqualTo: email)
+          .get();
+      return firestore
+          .collection("startups")
+          .doc(v.docs.first.id)
+          .collection("friendlist")
+          .where("status", isEqualTo: "pending")
+          .snapshots();
+    }
   }
 }
