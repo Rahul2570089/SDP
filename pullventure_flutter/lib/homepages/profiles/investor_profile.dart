@@ -30,6 +30,8 @@ class _InvestorProfileState extends State<InvestorProfile> {
   TextEditingController messageController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   String token = "";
+  bool isFriend = false;
+  bool isRequested = true;
 
   getToken() async {
     token = await dataBaseMethods.getUserTokenbyEmail(
@@ -98,6 +100,15 @@ class _InvestorProfileState extends State<InvestorProfile> {
   void initState() {
     super.initState();
     getToken();
+    checkIfFriend();
+  }
+
+  checkIfFriend() async {
+    isFriend = await dataBaseMethods.isFriend("startup",
+        currentEmail: widget.email, email: widget.investorModel.email!);
+    setState(() {
+      isRequested = false;
+    });
   }
 
   @override
@@ -111,61 +122,69 @@ class _InvestorProfileState extends State<InvestorProfile> {
         titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20.0),
         iconTheme: const IconThemeData(color: Colors.black),
         actions: [
-          IconButton(
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text("Send association request"),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            controller: amountController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              hintText: "Enter invested amount",
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          TextField(
-                            controller: messageController,
-                            maxLines: 5,
-                            decoration: const InputDecoration(
-                              hintText: "Enter your message",
-                            ),
-                          ),
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("Cancel"),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            dataBaseMethods.addFriendRequest("startup",
-                                currentName: Constants.name!,
-                                name: widget.investorModel.name!,
-                                currentEmail: widget.email,
-                                email: widget.investorModel.email!,
-                                amount: amountController.text,
-                                message: messageController.text);
-                            sendPushNotification(token, messageController.text, amountController.text);
-                            Navigator.pop(context);
-                          },
-                          child: const Text("Send request"),
-                        ),
-                      ],
-                    );
-                  });
-            },
-            icon: Image.asset("assets/images/add-friend.png",
-                width: 25, height: 25),
-          ),
+          isRequested
+              ? const CircularProgressIndicator()
+              : !isFriend
+                  ? IconButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Send association request"),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextField(
+                                      controller: amountController,
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(
+                                        hintText: "Enter invested amount",
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    TextField(
+                                      controller: messageController,
+                                      maxLines: 5,
+                                      decoration: const InputDecoration(
+                                        hintText: "Enter your message",
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Cancel"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      dataBaseMethods.addFriendRequest(
+                                          "startup", context,
+                                          currentName: Constants.name!,
+                                          name: widget.investorModel.name!,
+                                          currentEmail: widget.email,
+                                          email: widget.investorModel.email!,
+                                          amount: amountController.text,
+                                          message: messageController.text);
+                                      sendPushNotification(
+                                          token,
+                                          messageController.text,
+                                          amountController.text);
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Send request"),
+                                  ),
+                                ],
+                              );
+                            });
+                      },
+                      icon: Image.asset("assets/images/add-friend.png",
+                          width: 25, height: 25),
+                    )
+                  : Container(),
         ],
       ),
       body: SingleChildScrollView(

@@ -30,6 +30,8 @@ class _StartupProfileState extends State<StartupProfile> {
   TextEditingController messageController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   String token = "";
+  bool isFriend = false;
+  bool isRequested = true;
 
   getToken() async {
     token = await dataBaseMethods.getUserTokenbyEmail(
@@ -98,6 +100,15 @@ class _StartupProfileState extends State<StartupProfile> {
   void initState() {
     super.initState();
     getToken();
+    checkIfFriend();
+  }
+
+  checkIfFriend() async {
+    isFriend = await dataBaseMethods.isFriend("investor",
+        currentEmail: widget.email, email: widget.startupModel.email!);
+    setState(() {
+      isRequested = false;
+    });
   }
 
   @override
@@ -111,7 +122,7 @@ class _StartupProfileState extends State<StartupProfile> {
         titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20.0),
         iconTheme: const IconThemeData(color: Colors.black),
         actions: [
-          IconButton(
+          isRequested ? const CircularProgressIndicator() : !isFriend ? IconButton(
             onPressed: () {
               showDialog(
                   context: context,
@@ -147,6 +158,16 @@ class _StartupProfileState extends State<StartupProfile> {
                         ),
                         TextButton(
                           onPressed: () {
+                            dataBaseMethods.addFriendRequest(
+                                "investor", context,
+                                currentName: Constants.name!,
+                                name: widget.startupModel.name!,
+                                currentEmail: widget.email,
+                                email: widget.startupModel.email!,
+                                amount: amountController.text,
+                                message: messageController.text);
+                            sendPushNotification(token, messageController.text,
+                                amountController.text);
                             Navigator.pop(context);
                           },
                           child: const Text("Send request"),
@@ -157,7 +178,7 @@ class _StartupProfileState extends State<StartupProfile> {
             },
             icon: Image.asset("assets/images/add-friend.png",
                 width: 25, height: 25),
-          ),
+          ) : Container(),
         ],
       ),
       body: SingleChildScrollView(

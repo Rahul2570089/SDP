@@ -7,6 +7,7 @@ import 'package:pullventure_flutter/auth/authenticate.dart';
 import 'package:pullventure_flutter/homepages/association/pending_request.dart';
 import 'package:pullventure_flutter/homepages/chatscreen/chat_screen.dart';
 import 'package:pullventure_flutter/homepages/chatscreen/search_list.dart';
+import 'package:pullventure_flutter/homepages/profiles/associated_list.dart';
 import 'package:pullventure_flutter/main.dart';
 import 'package:pullventure_flutter/model/Constants.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
@@ -173,7 +174,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
           PopupMenuButton(
               position: PopupMenuPosition.under,
               onSelected: (value) {
-                if (value == 2) {
+                if (value == 3) {
                   AuthMethod.signout(context);
                   Constants.name = "";
                   Navigator.pushReplacement(
@@ -185,7 +186,15 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PendingRequest(type: widget.type, email: widget.email),
+                        builder: (context) => PendingRequest(
+                            type: widget.type, email: widget.email),
+                      ));
+                } else if (value == 2) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AssociatedList(
+                            type: widget.type, email: widget.email, downloadUrls: downloadUrls),
                       ));
                 }
               },
@@ -204,7 +213,12 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                       value: 1,
                       child: const Text("View pending requests")),
                   PopupMenuItem(
-                      onTap: () {}, value: 2, child: const Text("Sign out")),
+                      onTap: () {},
+                      value: 2,
+                      child: Text(
+                          "Associated ${widget.type == "investor" ? "startups" : "investors"}")),
+                  PopupMenuItem(
+                      onTap: () {}, value: 3, child: const Text("Sign out")),
                 ];
               })
         ],

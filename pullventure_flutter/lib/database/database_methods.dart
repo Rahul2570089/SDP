@@ -122,7 +122,7 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  addFriendRequest(String type,
+  addFriendRequest(String type, BuildContext context,
       {required String currentName,
       required String name,
       required String currentEmail,
@@ -134,7 +134,28 @@ class DatabaseMethods {
           .collection("investors")
           .where("email", isEqualTo: currentEmail)
           .get()
-          .then((value) {
+          .then((value) async {
+        final v = await firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: email)
+            .get();
+
+        if (v.docs.isNotEmpty) {
+          if (v.docs.first['status'] == "pending") {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Request already sent"),
+                ),
+              );
+              return;
+            }
+          }
+          return;
+        }
+
         firestore
             .collection("investors")
             .doc(value.docs.first.id)
@@ -144,6 +165,7 @@ class DatabaseMethods {
           "email": email,
           "amount": amount,
           "message": message,
+          "sender": currentEmail,
           "status": "pending"
         });
       });
@@ -162,6 +184,7 @@ class DatabaseMethods {
           "email": currentEmail,
           "amount": amount,
           "message": message,
+          "sender": currentEmail,
           "status": "pending"
         });
       });
@@ -170,7 +193,28 @@ class DatabaseMethods {
           .collection("startups")
           .where("email", isEqualTo: currentEmail)
           .get()
-          .then((value) {
+          .then((value) async {
+        final v = await firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: email)
+            .get();
+
+        if (v.docs.isNotEmpty) {
+          if (v.docs.first['status'] == "pending") {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Request already sent"),
+                ),
+              );
+              return;
+            }
+          }
+          return;
+        }
+
         firestore
             .collection("startups")
             .doc(value.docs.first.id)
@@ -180,6 +224,7 @@ class DatabaseMethods {
           "email": email,
           "amount": amount,
           "message": message,
+          "sender": currentEmail,
           "status": "pending"
         });
       });
@@ -228,6 +273,237 @@ class DatabaseMethods {
           .collection("friendlist")
           .where("status", isEqualTo: "pending")
           .snapshots();
+    }
+  }
+
+  withdrawRequest(
+    String type, {
+    required String currentEmail,
+    required String email,
+  }) async {
+    if (type == "investor") {
+      await firestore
+          .collection("investors")
+          .where("email", isEqualTo: currentEmail)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: email)
+            .get();
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .delete();
+      });
+
+      await firestore
+          .collection("startups")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: currentEmail)
+            .get();
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .delete();
+      });
+    } else {
+      await firestore
+          .collection("startups")
+          .where("email", isEqualTo: currentEmail)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: email)
+            .get();
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .delete();
+      });
+
+      await firestore
+          .collection("investors")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: currentEmail)
+            .get();
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .delete();
+      });
+    }
+  }
+
+  acceptRequest(String type,
+      {required String currentEmail, required String email}) async {
+    if (type == "investor") {
+      await firestore
+          .collection("investors")
+          .where("email", isEqualTo: currentEmail)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: email)
+            .get();
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .update({"status": "accepted"});
+      });
+
+      await firestore
+          .collection("startups")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: currentEmail)
+            .get();
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .update({"status": "accepted"});
+      });
+    } else {
+      await firestore
+          .collection("startups")
+          .where("email", isEqualTo: currentEmail)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: email)
+            .get();
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .update({"status": "accepted"});
+      });
+
+      await firestore
+          .collection("investors")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: currentEmail)
+            .get();
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .update({"status": "accepted"});
+      });
+    }
+  }
+
+  Future getFriends(String type, String email) async {
+    if (type == "investor") {
+      final v = await firestore
+          .collection("investors")
+          .where("email", isEqualTo: email)
+          .get();
+      return firestore
+          .collection("investors")
+          .doc(v.docs.first.id)
+          .collection("friendlist")
+          .where("status", isEqualTo: "accepted")
+          .snapshots();
+    } else {
+      final v = await firestore
+          .collection("startups")
+          .where("email", isEqualTo: email)
+          .get();
+      return firestore
+          .collection("startups")
+          .doc(v.docs.first.id)
+          .collection("friendlist")
+          .where("status", isEqualTo: "accepted")
+          .snapshots();
+    }
+  }
+
+  Future<bool> isFriend(String type,
+      {required String currentEmail, required String email}) async {
+    if (type == "investor") {
+      final v = await firestore
+          .collection("investors")
+          .where("email", isEqualTo: currentEmail)
+          .get();
+
+      final v1 = await firestore
+          .collection("investors")
+          .doc(v.docs.first.id)
+          .collection("friendlist")
+          .where("email", isEqualTo: email)
+          .get();
+
+      if (v1.docs.isNotEmpty && v1.docs.first['status'] == "accepted") {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      final v = await firestore
+          .collection("startups")
+          .where("email", isEqualTo: currentEmail)
+          .get();
+      final v1 = await firestore
+          .collection("startups")
+          .doc(v.docs.first.id)
+          .collection("friendlist")
+          .where("email", isEqualTo: email)
+          .get();
+
+      if (v1.docs.isNotEmpty && v1.docs.first['status'] == "accepted") {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 }

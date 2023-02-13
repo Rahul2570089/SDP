@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
+import 'package:pullventure_flutter/homepages/association/request_received.dart';
+import 'package:pullventure_flutter/homepages/association/request_sent.dart';
 
 class PendingRequest extends StatefulWidget {
   final String type;
@@ -16,19 +18,19 @@ class _PendingRequestState extends State<PendingRequest> {
   DatabaseMethods dataBaseMethods = DatabaseMethods();
   Map<String, String> downloadUrls = {};
   Stream? pendingRequestStream;
+  int selectedIndex = 0;
+  TabBar tabBar = const TabBar(
+    labelColor: Colors.black,
+    tabs: [
+      Tab(
+        text: "Sent",
+      ),
+      Tab(
+        text: "Received",
+      ),
+    ],
+  );
 
-  getPendingRequest() async {
-    pendingRequestStream =
-        await dataBaseMethods.getFriendRequests(widget.type, widget.email);
-
-    await dataBaseMethods
-        .getAllLogos(widget.type == "investor" ? "startups" : "investors")
-        .then((value) {
-      setState(() {
-        downloadUrls = value;
-      });
-    });
-  }
 
   Widget listView(list) {
     return ListView.builder(
@@ -116,39 +118,31 @@ class _PendingRequestState extends State<PendingRequest> {
   }
 
   @override
-  void initState() {
-    getPendingRequest();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Pending Requests"),
-        backgroundColor: Colors.white,
-        elevation: 0.0,
-        centerTitle: true,
-        titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20.0),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-      body: StreamBuilder(
-          stream: pendingRequestStream,
-          builder: ((context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasData) {
-              return listView(snapshot.data);
-            } else if (!snapshot.hasData) {
-              return const Center(
-                child: Text("No pending requests"),
-              );
-            } else {
-              return const ScaffoldMessenger(child: Text("Some error occured"));
-            }
-          })),
+    return DefaultTabController(
+      length: 2,
+      initialIndex: selectedIndex,
+      child: Scaffold(
+          appBar: AppBar(
+            title: const Text("Pending Requests"),
+            backgroundColor: Colors.white,
+            elevation: 0.0,
+            centerTitle: true,
+            titleTextStyle:
+                const TextStyle(color: Colors.black, fontSize: 20.0),
+            iconTheme: const IconThemeData(color: Colors.black),
+            bottom: tabBar,
+          ),
+          body: TabBarView(children: [
+            RequestSent(
+              email: widget.email,
+              type: widget.type,
+            ),
+            RequestReceived(
+              email: widget.email,
+              type: widget.type,
+            ),
+          ])),
     );
   }
 }
