@@ -20,6 +20,7 @@ class _RequestSentState extends State<RequestSent> {
   DatabaseMethods dataBaseMethods = DatabaseMethods();
   Map<String, String> downloadUrls = {};
   Stream? pendingRequestStream;
+  List list1 = [];
 
   getPendingRequest() async {
     pendingRequestStream =
@@ -128,13 +129,19 @@ class _RequestSentState extends State<RequestSent> {
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasData) {
-            return listView(snapshot.data);
-          } else if (!snapshot.hasData) {
-            return const Center(
-              child: Text("No pending requests"),
-            );
+            for (var element in (snapshot.data as QuerySnapshot).docs) {
+              if (element['sender'] == widget.email) {
+                list1.add(element);
+              }
+            }
+            if (list1.isEmpty) {
+              return const Center(
+                child: Text("No requests sent"),
+              );
+            }
+            return listView(list1);
           } else {
-            return const ScaffoldMessenger(child: Text("Some error occured"));
+            return Container();
           }
         }));
   }

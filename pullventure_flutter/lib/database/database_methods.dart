@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 class DatabaseMethods {
   final firestore = FirebaseFirestore.instance;
 
-  Future getUserbyusername(String username, String type) async {
+  Future getUserbyemail(String email, String type) async {
     return await firestore
-        .collection(type == "startup" ? "startups" : "investors")
-        .where("Name", isEqualTo: username)
+        .collection("${type}s")
+        .where("email", isEqualTo: email)
         .get();
   }
 

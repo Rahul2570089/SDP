@@ -8,6 +8,8 @@ import 'package:pullventure_flutter/homepages/association/pending_request.dart';
 import 'package:pullventure_flutter/homepages/chatscreen/chat_screen.dart';
 import 'package:pullventure_flutter/homepages/chatscreen/search_list.dart';
 import 'package:pullventure_flutter/homepages/profiles/associated_list.dart';
+import 'package:pullventure_flutter/homepages/profiles/investor_self.dart';
+import 'package:pullventure_flutter/homepages/profiles/startup_self.dart';
 import 'package:pullventure_flutter/main.dart';
 import 'package:pullventure_flutter/model/Constants.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
@@ -174,6 +176,17 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
           PopupMenuButton(
               position: PopupMenuPosition.under,
               onSelected: (value) {
+                if (value == 0) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => widget.type == "startup"
+                            ? SelfProfileStartUp(
+                                email: widget.email,
+                              )
+                            : SelfProfileInvestor(email: widget.email),
+                      ));
+                }
                 if (value == 3) {
                   AuthMethod.signout(context);
                   Constants.name = "";
@@ -194,7 +207,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => AssociatedList(
-                            type: widget.type, email: widget.email, downloadUrls: downloadUrls),
+                            type: widget.type,
+                            email: widget.email,
+                            downloadUrls: downloadUrls),
                       ));
                 }
               },
