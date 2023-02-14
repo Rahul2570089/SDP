@@ -114,6 +114,7 @@ class _StartupProfileState extends State<StartupProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text("${widget.startupModel.name!}'s Profile"),
         backgroundColor: Colors.white,
@@ -122,190 +123,219 @@ class _StartupProfileState extends State<StartupProfile> {
         titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20.0),
         iconTheme: const IconThemeData(color: Colors.black),
         actions: [
-          isRequested ? const CircularProgressIndicator() : !isFriend ? IconButton(
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text("Send association request"),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            controller: amountController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              hintText: "Enter invested amount",
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          TextField(
-                            controller: messageController,
-                            maxLines: 5,
-                            decoration: const InputDecoration(
-                              hintText: "Enter your message",
-                            ),
-                          ),
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("Cancel"),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            dataBaseMethods.addFriendRequest(
-                                "investor", context,
-                                currentName: Constants.name!,
-                                name: widget.startupModel.name!,
-                                currentEmail: widget.email,
-                                email: widget.startupModel.email!,
-                                amount: amountController.text,
-                                message: messageController.text);
-                            sendPushNotification(token, messageController.text,
-                                amountController.text);
-                            Navigator.pop(context);
-                          },
-                          child: const Text("Send request"),
-                        ),
-                      ],
-                    );
-                  });
-            },
-            icon: Image.asset("assets/images/add-friend.png",
-                width: 25, height: 25),
-          ) : Container(),
+          isRequested
+              ? const CircularProgressIndicator()
+              : !isFriend
+                  ? IconButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Send association request"),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextField(
+                                      controller: amountController,
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(
+                                        hintText: "Enter invested amount",
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    TextField(
+                                      controller: messageController,
+                                      maxLines: 5,
+                                      decoration: const InputDecoration(
+                                        hintText: "Enter your message",
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Cancel"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      dataBaseMethods.addFriendRequest(
+                                          "investor", context,
+                                          currentName: Constants.name!,
+                                          name: widget.startupModel.name!,
+                                          currentEmail: widget.email,
+                                          email: widget.startupModel.email!,
+                                          amount: amountController.text,
+                                          message: messageController.text);
+                                      sendPushNotification(
+                                          token,
+                                          messageController.text,
+                                          amountController.text);
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Send request"),
+                                  ),
+                                ],
+                              );
+                            });
+                      },
+                      icon: Image.asset("assets/images/add-friend.png",
+                          width: 25, height: 25),
+                    )
+                  : Container(),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(
-              widget.imgUrl,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.account_circle, size: 150),
-            ),
-            const SizedBox(height: 10.0),
-            Text(
-              widget.startupModel.name!,
-              style: const TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 40.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text("About",
-                      style: TextStyle(
-                        fontSize: 25.0,
-                      ))),
-            ),
-            const SizedBox(height: 10.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 30.0, right: 30.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: ReadMoreText(
-                  widget.startupModel.description!,
-                  trimLines: 2,
-                  colorClickableText: Colors.blue,
-                  trimMode: TrimMode.Line,
-                  trimCollapsedText: 'Show more',
-                  trimExpandedText: 'Show less',
-                  style: const TextStyle(
-                      fontSize: 16, color: Color.fromARGB(255, 117, 116, 116)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 40.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text("Company Sector",
-                      style: TextStyle(
-                        fontSize: 25.0,
-                      ))),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(widget.startupModel.sector!,
-                      style: const TextStyle(
-                          color: Color.fromARGB(255, 117, 116, 116)))),
-            ),
-            const SizedBox(height: 40.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Funding raised",
-                  style: TextStyle(
-                    fontSize: 25.0,
+            Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Image.network(
+                    widget.imgUrl,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.account_circle, size: 150),
                   ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 30.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text("Details",
-                      style: TextStyle(
-                        fontSize: 25.0,
-                      ))),
-            ),
-            const SizedBox(height: 15.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Email:"),
-              ),
-            ),
-            const SizedBox(height: 5.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    widget.startupModel.email!,
+                  const SizedBox(height: 10.0),
+                  Text(
+                    widget.startupModel.name!,
                     style: const TextStyle(
-                        color: Color.fromARGB(255, 117, 116, 116)),
-                  )),
-            ),
-            const SizedBox(height: 15.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Headquarters:"),
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                ],
               ),
             ),
-            const SizedBox(height: 5.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    widget.startupModel.headquarters!,
-                    style: const TextStyle(
-                        color: Color.fromARGB(255, 117, 116, 116)),
-                  )),
+            const SizedBox(height: 10.0),
+            Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  const SizedBox(height: 10.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text("About",
+                            style: TextStyle(
+                              fontSize: 20.0,
+                            ))),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: ReadMoreText(
+                        widget.startupModel.description!,
+                        trimLines: 2,
+                        colorClickableText: Colors.blue,
+                        trimMode: TrimMode.Line,
+                        trimCollapsedText: 'Show more',
+                        trimExpandedText: 'Show less',
+                        style: const TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 117, 116, 116)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  const SizedBox(height: 10.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text("Company Sector",
+                            style: TextStyle(
+                              fontSize: 20.0,
+                            ))),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(widget.startupModel.sector!,
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 117, 116, 116)))),
+                  ),
+                  const SizedBox(height: 10.0),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  const SizedBox(height: 10.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text("Details",
+                            style: TextStyle(
+                              fontSize: 20.0,
+                            ))),
+                  ),
+                  const SizedBox(height: 15.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 30.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Email:"),
+                    ),
+                  ),
+                  const SizedBox(height: 5.0),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          widget.startupModel.email!,
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 117, 116, 116)),
+                        )),
+                  ),
+                  const SizedBox(height: 15.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 30.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Headquarters:"),
+                    ),
+                  ),
+                  const SizedBox(height: 5.0),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          widget.startupModel.headquarters!,
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 117, 116, 116)),
+                        )),
+                  ),
+                  const SizedBox(height: 10.0),
+                ],
+              ),
             ),
           ],
         ),

@@ -114,6 +114,7 @@ class _InvestorProfileState extends State<InvestorProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text("${widget.investorModel.name!}'s Profile"),
         backgroundColor: Colors.white,
@@ -190,161 +191,205 @@ class _InvestorProfileState extends State<InvestorProfile> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            ClipOval(
-              child: Image.network(
-                widget.imgUrl,
-                width: 150,
-                height: 150,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.account_circle, size: 150),
+            Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
               ),
-            ),
-            const SizedBox(height: 10.0),
-            Text(
-              widget.investorModel.name!,
-              style: const TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 40.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text("About",
-                      style: TextStyle(
-                        fontSize: 25.0,
-                      ))),
-            ),
-            const SizedBox(height: 10.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "I am a software engineer and I love to code.",
-                  )),
-            ),
-            const SizedBox(height: 40.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text("Investment Sector",
-                      style: TextStyle(
-                        fontSize: 25.0,
-                      ))),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(widget.investorModel.investmentSector!,
-                      style: const TextStyle(
-                        fontSize: 18.0,
-                      ))),
-            ),
-            const SizedBox(height: 40.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text("Experience",
-                      style: TextStyle(
-                        fontSize: 25.0,
-                      ))),
-            ),
-            const SizedBox(height: 10.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 30.0),
-              child: Row(
+              child: Column(
                 children: [
                   ClipOval(
                     child: Image.network(
                       widget.imgUrl,
-                      width: 50,
-                      height: 50,
+                      width: 150,
+                      height: 150,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.account_circle, size: 50),
+                          const Icon(Icons.account_circle, size: 150),
                     ),
                   ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(left: 20.0),
-                          child: Text(
-                            "Founder & CEO",
+                  const SizedBox(height: 10.0),
+                  Text(
+                    widget.investorModel.name!,
+                    style: const TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Column(
+                children: const [
+                  SizedBox(height: 10.0),
+                  Padding(
+                    padding: EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text("About",
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        const SizedBox(height: 5.0),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: Text(
-                            widget.investorModel.companyName!,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                        const SizedBox(height: 5.0),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: ReadMoreText(
-                            "• ${widget.investorModel.aboutCompany!}",
-                            trimLines: 2,
-                            colorClickableText: Colors.blue,
-                            trimMode: TrimMode.Line,
-                            trimCollapsedText: 'Show more',
-                            trimExpandedText: 'Show less',
+                              fontSize: 20.0,
+                            ))),
+                  ),
+                  SizedBox(height: 10.0),
+                  Padding(
+                    padding: EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "I am a software engineer and I love to code.",
+                        )),
+                  ),
+                  SizedBox(height: 10.0),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 10.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text("Investment Sector",
+                            style: TextStyle(
+                              fontSize: 20.0,
+                            ))),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(widget.investorModel.investmentSector!,
                             style: const TextStyle(
-                                fontSize: 16,
-                                color: Color.fromARGB(255, 117, 116, 116)),
+                              fontSize: 14.0,
+                            ))),
+                  ),
+                  const SizedBox(height: 10.0),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 10.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text("Experience",
+                            style: TextStyle(
+                              fontSize: 20.0,
+                            ))),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30.0),
+                    child: Row(
+                      children: [
+                        ClipOval(
+                          child: Image.network(
+                            widget.imgUrl,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.account_circle, size: 50),
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(left: 20.0),
+                                child: Text(
+                                  "Founder & CEO",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              const SizedBox(height: 5.0),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: Text(
+                                  widget.investorModel.companyName!,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ),
+                              const SizedBox(height: 5.0),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: ReadMoreText(
+                                  "• ${widget.investorModel.aboutCompany!}",
+                                  trimLines: 2,
+                                  colorClickableText: Colors.blue,
+                                  trimMode: TrimMode.Line,
+                                  trimCollapsedText: 'Show more',
+                                  trimExpandedText: 'Show less',
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      color:
+                                          Color.fromARGB(255, 117, 116, 116)),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 10.0),
                 ],
               ),
             ),
-            const SizedBox(height: 30.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Email:"),
+            const SizedBox(height: 10.0),
+            Container(
+              decoration: const BoxDecoration(
+                color: Colors.white
               ),
-            ),
-            const SizedBox(height: 5.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 30.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    widget.investorModel.email!,
-                    style: const TextStyle(
-                        color: Color.fromARGB(255, 117, 116, 116)),
-                  )),
-            ),
-            const SizedBox(height: 30.0),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Investments:",
-                  style: TextStyle(
-                    fontSize: 25.0,
+              child: Column(
+                children: [
+                  const SizedBox(height: 10.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 30.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Email:"),
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 5.0),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30.0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          widget.investorModel.email!,
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 117, 116, 116)),
+                        )),
+                  ),
+                  const SizedBox(height: 10.0),
+                ],
               ),
             ),
           ],

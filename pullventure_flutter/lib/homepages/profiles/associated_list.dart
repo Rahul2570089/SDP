@@ -19,7 +19,7 @@ class AssociatedList extends StatefulWidget {
 
 class _AssociatedListState extends State<AssociatedList> {
   DatabaseMethods dataBaseMethods = DatabaseMethods();
-  Stream? chatroom;
+  Stream? associatedListStream;
   bool isLoading = true;
 
   @override
@@ -27,7 +27,7 @@ class _AssociatedListState extends State<AssociatedList> {
     super.initState();
     dataBaseMethods.getFriends(widget.type, widget.email).then((value) {
       setState(() {
-        chatroom = value;
+        associatedListStream = value;
         isLoading = false;
       });
     });
@@ -54,28 +54,34 @@ class _AssociatedListState extends State<AssociatedList> {
             child: Column(
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
+                    ClipOval(
+                      child: widget.downloadUrls['${url}_photo'] == null
+                          ? const Icon(Icons.account_circle, size: 50)
+                          : Image.network(
+                              widget.downloadUrls['${url}_photo'] ?? '',
+                              width: 50.0,
+                              height: 50.0,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.account_circle, size: 50),
+                            ),
+                    ),
+                    const SizedBox(width: 10.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ClipOval(
-                          child: widget.downloadUrls['${url}_photo'] == null
-                              ? const Icon(Icons.account_circle, size: 50)
-                              : Image.network(
-                                  widget.downloadUrls['${url}_photo'] ?? '',
-                                  width: 50.0,
-                                  height: 50.0,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.account_circle,
-                                          size: 50),
-                                ),
-                        ),
-                        const SizedBox(width: 10.0),
                         Text(
                           list.docs[index]['name'],
                           style: const TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "₹${list.docs[index]['amount']}",
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.grey,
                           ),
                         ),
                       ],
@@ -105,7 +111,7 @@ class _AssociatedListState extends State<AssociatedList> {
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: StreamBuilder(
-        stream: chatroom,
+        stream: associatedListStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
