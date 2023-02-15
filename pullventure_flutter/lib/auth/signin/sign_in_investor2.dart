@@ -362,7 +362,10 @@ class _SignInInvestor2State extends State<SignInInvestor2> {
                                           "aboutcompany": aboutCompany.text,
                                           "mobilenumber": mobileNumber.text,
                                           "investmentsector": selected,
-                                          "token": ''
+                                          "token": '',
+                                          "about":
+                                              "Enter some information about you",
+                                          "companytitle": "No title specified",    
                                         });
                                         final investor = Investor(
                                           name: widget.name,

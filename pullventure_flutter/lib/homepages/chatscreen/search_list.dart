@@ -47,7 +47,9 @@ class _SearchListState extends State<SearchList> {
             mobileNumber: element['mobilenumber'],
             investmentSector: element['investmentsector'],
             companyName: element['companyname'],
-            aboutCompany: element['aboutcompany']));
+            aboutCompany: element['aboutcompany'],
+            about: element['about'],
+            companytitle: element['companytitle']));
       }
     }
     await dataBaseMethods
@@ -61,7 +63,6 @@ class _SearchListState extends State<SearchList> {
       isLoading = false;
     });
   }
-
 
   @override
   void initState() {
@@ -79,8 +80,16 @@ class _SearchListState extends State<SearchList> {
               context,
               MaterialPageRoute(
                   builder: (context) => widget.type == 'investor'
-                      ? StartupProfile(imgUrl: downloadUrls['${url}_photo'] ?? '', email: widget.email ,startupModel: list[index],)
-                      : InvestorProfile(imgUrl: downloadUrls['${url}_photo'] ?? '', email: widget.email ,investorModel: list[index],))),
+                      ? StartupProfile(
+                          imgUrl: downloadUrls['${url}_photo'] ?? '',
+                          email: widget.email,
+                          startupModel: list[index],
+                        )
+                      : InvestorProfile(
+                          imgUrl: downloadUrls,
+                          email: widget.email,
+                          investorModel: list[index],
+                        ))),
           child: Container(
             padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
@@ -98,13 +107,16 @@ class _SearchListState extends State<SearchList> {
                 Row(
                   children: [
                     ClipOval(
-                      child: downloadUrls['${url}_photo']=='' ? const Icon(Icons.account_circle, size: 50) : Image.network(
-                        downloadUrls['${url}_photo'] ?? '',
-                        width: 50.0,
-                        height: 50.0,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.account_circle, size: 50.0),
-                      ),
+                      child: downloadUrls['${url}_photo'] == ''
+                          ? const Icon(Icons.account_circle, size: 50)
+                          : Image.network(
+                              downloadUrls['${url}_photo'] ?? '',
+                              width: 50.0,
+                              height: 50.0,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.account_circle, size: 50.0),
+                            ),
                     ),
                     const SizedBox(width: 10.0),
                     Column(

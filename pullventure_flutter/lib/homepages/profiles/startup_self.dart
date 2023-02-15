@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
 import 'package:pullventure_flutter/model/startup_model.dart';
@@ -19,6 +20,12 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
       name: "", email: "", headquarters: "", description: "", sector: "");
   bool isLoading = true;
   String url = "";
+  PlatformFile? _image;
+
+  TextEditingController aboutController = TextEditingController();
+  TextEditingController sectorController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController headquartersController = TextEditingController();
 
   getUser() async {
     QuerySnapshot temp =
@@ -41,6 +48,119 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  showDialogToEdit(int index) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Edit Profile"),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  index == 0
+                      ? Column(
+                          children: [
+                            TextField(
+                              controller: aboutController,
+                              decoration: const InputDecoration(
+                                hintText: "About",
+                              ),
+                            ),
+                          ],
+                        )
+                      : index == 1
+                          ? Column(
+                              children: [
+                                TextField(
+                                  controller: sectorController,
+                                  decoration: const InputDecoration(
+                                    hintText: "Company Sector",
+                                  ),
+                                ),
+                              ],
+                            )
+                          : index == 2
+                              ? Column(
+                                  children: [
+                                    TextField(
+                                      controller: emailController,
+                                      decoration: const InputDecoration(
+                                        hintText: "Email",
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10.0),
+                                    TextField(
+                                      controller: headquartersController,
+                                      decoration: const InputDecoration(
+                                        hintText: "Headquarters",
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Container()
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: const Text("Save"),
+              ),
+            ],
+          );
+        });
+  }
+
+  Future pickImage(BuildContext context) async {
+    try {
+      final image = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowMultiple: false,
+        allowedExtensions: ['jpg', 'png', 'jpeg', 'svg'],
+      );
+      if (image == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No image selected'),
+          ),
+        );
+        return;
+      }
+      setState(() {
+        _image = image.files.first;
+      });
+
+      if (!mounted) return;
+      await dataBaseMethods.uploadLogo(context,
+          image: _image, email: widget.email, type: "startups");
+      await dataBaseMethods.getAllLogos("startups").then((value) {
+        setState(() {
+          downloadUrls = value;
+          url = downloadUrls["${widget.email}_photo"] ?? "";
+        });
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Image selected'),
+        ),
+      );
+    } on Exception catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
   }
 
   @override
@@ -72,12 +192,30 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
                     color: Colors.white,
                     child: Column(
                       children: [
-                        Image.network(
-                          url,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.account_circle, size: 150),
-                        ),
+                        isLoading
+                            ? const Center(child: CircularProgressIndicator())
+                            : Stack(children: [
+                                Image.network(
+                                  url,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.account_circle,
+                                          size: 150),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      pickImage(context);
+                                    },
+                                    icon: const Icon(Icons.edit,
+                                        size: 25.0,
+                                        color:
+                                            Color.fromARGB(255, 144, 141, 141)),
+                                  ),
+                                ),
+                              ]),
                         const SizedBox(height: 10.0),
                         Text(
                           searchListStartup.name!,
@@ -96,14 +234,28 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
                     child: Column(
                       children: [
                         const SizedBox(height: 10.0),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 30.0),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 30.0),
                           child: Align(
                               alignment: Alignment.centerLeft,
-                              child: Text("About",
-                                  style: TextStyle(
-                                    fontSize: 20.0,
-                                  ))),
+                              child: Row(
+                                children: [
+                                  const Text("About",
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                      )),
+                                  const SizedBox(width: 10.0),
+                                  IconButton(
+                                    onPressed: () {
+                                      showDialogToEdit(0);
+                                    },
+                                    icon: const Icon(Icons.edit,
+                                        size: 20.0,
+                                        color:
+                                            Color.fromARGB(255, 144, 141, 141)),
+                                  ),
+                                ],
+                              )),
                         ),
                         const SizedBox(height: 10.0),
                         Padding(
@@ -134,14 +286,27 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
                     child: Column(
                       children: [
                         const SizedBox(height: 10.0),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 30.0),
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text("Company Sector",
-                                  style: TextStyle(
-                                    fontSize: 20.0,
-                                  ))),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 30.0),
+                          child: Row(
+                            children: [
+                              const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text("Company Sector",
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                      ))),
+                              const SizedBox(width: 10.0),
+                              IconButton(
+                                onPressed: () {
+                                  showDialogToEdit(1);
+                                },
+                                icon: const Icon(Icons.edit,
+                                    size: 20.0,
+                                    color: Color.fromARGB(255, 144, 141, 141)),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(
                           height: 10,
@@ -165,14 +330,27 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
                     child: Column(
                       children: [
                         const SizedBox(height: 10.0),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 30.0),
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text("Details",
-                                  style: TextStyle(
-                                    fontSize: 20.0,
-                                  ))),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 30.0),
+                          child: Row(
+                            children: [
+                              const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text("Details",
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                      ))),
+                              const SizedBox(width: 10.0),
+                              IconButton(
+                                onPressed: () {
+                                  showDialogToEdit(2);
+                                },
+                                icon: const Icon(Icons.edit,
+                                    size: 20.0,
+                                    color: Color.fromARGB(255, 144, 141, 141)),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 15.0),
                         const Padding(

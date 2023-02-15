@@ -11,7 +11,7 @@ import 'package:pullventure_flutter/model/investor_model.dart';
 import 'package:readmore/readmore.dart';
 
 class InvestorProfile extends StatefulWidget {
-  final String imgUrl;
+  final Map<String, dynamic> imgUrl;
   final String email;
   final InvestorModel investorModel;
 
@@ -198,9 +198,11 @@ class _InvestorProfileState extends State<InvestorProfile> {
               ),
               child: Column(
                 children: [
+                  const SizedBox(height: 10.0),
                   ClipOval(
                     child: Image.network(
-                      widget.imgUrl,
+                      widget.imgUrl['${widget.investorModel.email}_photo'] ??
+                          "",
                       width: 150,
                       height: 150,
                       fit: BoxFit.cover,
@@ -226,9 +228,9 @@ class _InvestorProfileState extends State<InvestorProfile> {
                 color: Colors.white,
               ),
               child: Column(
-                children: const [
-                  SizedBox(height: 10.0),
-                  Padding(
+                children: [
+                  const SizedBox(height: 10.0),
+                  const Padding(
                     padding: EdgeInsets.only(left: 30.0),
                     child: Align(
                         alignment: Alignment.centerLeft,
@@ -237,16 +239,16 @@ class _InvestorProfileState extends State<InvestorProfile> {
                               fontSize: 20.0,
                             ))),
                   ),
-                  SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
                   Padding(
-                    padding: EdgeInsets.only(left: 30.0),
+                    padding: const EdgeInsets.only(left: 30.0),
                     child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "I am a software engineer and I love to code.",
+                          widget.investorModel.about!,
                         )),
                   ),
-                  SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
                 ],
               ),
             ),
@@ -307,7 +309,9 @@ class _InvestorProfileState extends State<InvestorProfile> {
                       children: [
                         ClipOval(
                           child: Image.network(
-                            widget.imgUrl,
+                            widget.imgUrl[
+                                    '${widget.email}_photo'] ??
+                                "",
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
@@ -319,11 +323,11 @@ class _InvestorProfileState extends State<InvestorProfile> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Padding(
-                                padding: EdgeInsets.only(left: 20.0),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20.0),
                                 child: Text(
-                                  "Founder & CEO",
-                                  style: TextStyle(
+                                  widget.investorModel.companytitle!,
+                                  style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -364,9 +368,7 @@ class _InvestorProfileState extends State<InvestorProfile> {
             ),
             const SizedBox(height: 10.0),
             Container(
-              decoration: const BoxDecoration(
-                color: Colors.white
-              ),
+              decoration: const BoxDecoration(color: Colors.white),
               child: Column(
                 children: [
                   const SizedBox(height: 10.0),

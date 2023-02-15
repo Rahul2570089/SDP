@@ -5,6 +5,8 @@ class InvestorModel {
   String? investmentSector;
   String? companyName;
   String? aboutCompany;
+  String? about;
+  String? companytitle;
 
   InvestorModel(
       {this.name,
@@ -12,5 +14,7 @@ class InvestorModel {
       this.mobileNumber,
       this.investmentSector,
       this.companyName,
-      this.aboutCompany});
+      this.aboutCompany,
+      this.about,
+      this.companytitle});
 }

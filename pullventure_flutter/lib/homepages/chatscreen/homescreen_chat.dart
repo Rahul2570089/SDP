@@ -118,6 +118,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 ],
               ),
               child: Column(
+                
                 children: [
                   Row(
                     children: [
@@ -128,6 +129,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                                 downloadUrls['${url}_photo'] ?? '',
                                 width: 50.0,
                                 height: 50.0,
+                                fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     const Icon(Icons.account_circle, size: 50),
                               ),

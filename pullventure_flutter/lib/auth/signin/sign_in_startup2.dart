@@ -381,7 +381,7 @@ class _SignInStartUp2State extends State<SignInStartUp2> {
                                               companyHeadquarters.text,
                                           "description": basicDescription.text,
                                           "sector": selected,
-                                          "token": ''
+                                          "token": '',
                                         });
                                         final startup = StartUp(
                                           name: widget.name,

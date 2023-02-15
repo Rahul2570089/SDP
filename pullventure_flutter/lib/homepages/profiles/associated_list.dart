@@ -62,6 +62,7 @@ class _AssociatedListState extends State<AssociatedList> {
                               widget.downloadUrls['${url}_photo'] ?? '',
                               width: 50.0,
                               height: 50.0,
+                              fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
                                   const Icon(Icons.account_circle, size: 50),
                             ),

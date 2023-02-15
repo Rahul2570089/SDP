@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
 import 'package:pullventure_flutter/model/investor_model.dart';
@@ -28,6 +29,15 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
       aboutCompany: "");
   bool isLoading = true;
   String url = "";
+  String url2 = "";
+  PlatformFile? _image;
+
+  TextEditingController aboutController = TextEditingController();
+  TextEditingController sectorController = TextEditingController();
+  TextEditingController expTitle = TextEditingController();
+  TextEditingController expCompany = TextEditingController();
+  TextEditingController expDescription = TextEditingController();
+  TextEditingController emailController = TextEditingController();
 
   getUser() async {
     QuerySnapshot temp =
@@ -40,7 +50,9 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
         mobileNumber: temp.docs.first['mobilenumber'],
         investmentSector: temp.docs.first['investmentsector'],
         companyName: temp.docs.first['companyname'],
-        aboutCompany: temp.docs.first['aboutcompany']);
+        aboutCompany: temp.docs.first['aboutcompany'],
+        about: temp.docs.first['about'],
+        companytitle: temp.docs.first['companytitle']);
 
     await dataBaseMethods.getAllLogos("investors").then((value) {
       setState(() {
@@ -48,9 +60,145 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
         url = downloadUrls["${widget.email}_photo"] ?? "";
       });
     });
+    await dataBaseMethods.getAllLogos("startups").then((value) {
+      setState(() {
+        downloadUrls = value;
+        url2 = downloadUrls["${widget.email}_photo"] ?? "";
+      });
+    });
+
     setState(() {
       isLoading = false;
     });
+  }
+
+  showDialogToEdit(int index) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Edit Profile"),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  index == 0
+                      ? Column(
+                          children: [
+                            TextField(
+                              controller: aboutController,
+                              decoration: const InputDecoration(
+                                hintText: "About",
+                              ),
+                            ),
+                          ],
+                        )
+                      : index == 1
+                          ? Column(
+                              children: [
+                                TextField(
+                                  controller: sectorController,
+                                  decoration: const InputDecoration(
+                                    hintText: "Investment Sector",
+                                  ),
+                                ),
+                              ],
+                            )
+                          : index == 2
+                              ? Column(
+                                  children: [
+                                    TextField(
+                                      controller: expTitle,
+                                      decoration: const InputDecoration(
+                                        hintText: "Title",
+                                      ),
+                                    ),
+                                    TextField(
+                                      controller: expCompany,
+                                      decoration: const InputDecoration(
+                                        hintText: "Company",
+                                      ),
+                                    ),
+                                    TextField(
+                                      controller: expDescription,
+                                      decoration: const InputDecoration(
+                                        hintText: "Company Description",
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : index == 3
+                                  ? Column(
+                                      children: [
+                                        TextField(
+                                          controller: emailController,
+                                          decoration: const InputDecoration(
+                                            hintText: "Email",
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Container()
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: const Text("Save"),
+              ),
+            ],
+          );
+        });
+  }
+
+  Future pickImage(BuildContext context) async {
+    try {
+      final image = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowMultiple: false,
+        allowedExtensions: ['jpg', 'png', 'jpeg', 'svg'],
+      );
+      if (image == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No image selected'),
+          ),
+        );
+        return;
+      }
+      setState(() {
+        _image = image.files.first;
+      });
+
+      if (!mounted) return;
+      await dataBaseMethods.uploadLogo(context,
+          image: _image, email: widget.email, type: "investors");
+      await dataBaseMethods.getAllLogos("investors").then((value) {
+        setState(() {
+          downloadUrls = value;
+          url = downloadUrls["${widget.email}_photo"] ?? "";
+        });
+      });
+      if (mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Image selected'),
+        ),
+      );
+    } on Exception catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
   }
 
   @override
@@ -85,16 +233,31 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
                     ),
                     child: Column(
                       children: [
-                        ClipOval(
-                          child: Image.network(
-                            url,
-                            width: 150,
-                            height: 150,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.account_circle, size: 150),
+                        const SizedBox(height: 10.0),
+                        Stack(children: [
+                          ClipOval(
+                            child: Image.network(
+                              url,
+                              width: 150,
+                              height: 150,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.account_circle, size: 150),
+                            ),
                           ),
-                        ),
+                          Positioned(
+                            bottom: 0,
+                            right: -10,
+                            child: IconButton(
+                              onPressed: () {
+                                pickImage(context);
+                              },
+                              icon: const Icon(Icons.edit,
+                                  size: 25.0,
+                                  color: Color.fromARGB(255, 144, 141, 141)),
+                            ),
+                          ),
+                        ]),
                         const SizedBox(height: 10.0),
                         Text(
                           searchListInvestor.name!,
@@ -113,27 +276,41 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
                       color: Colors.white,
                     ),
                     child: Column(
-                      children: const [
-                        SizedBox(height: 10.0),
+                      children: [
+                        const SizedBox(height: 10.0),
                         Padding(
-                          padding: EdgeInsets.only(left: 30.0),
+                          padding: const EdgeInsets.only(left: 30.0),
                           child: Align(
                               alignment: Alignment.centerLeft,
-                              child: Text("About",
-                                  style: TextStyle(
-                                    fontSize: 20.0,
-                                  ))),
+                              child: Row(
+                                children: [
+                                  const Text("About",
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                      )),
+                                  const SizedBox(width: 5.0),
+                                  IconButton(
+                                    onPressed: () {
+                                      showDialogToEdit(0);
+                                    },
+                                    icon: const Icon(Icons.edit,
+                                        size: 20.0,
+                                        color:
+                                            Color.fromARGB(255, 144, 141, 141)),
+                                  ),
+                                ],
+                              )),
                         ),
-                        SizedBox(height: 10.0),
+                        const SizedBox(height: 10.0),
                         Padding(
-                          padding: EdgeInsets.only(left: 30.0),
+                          padding: const EdgeInsets.only(left: 30.0),
                           child: Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                "I am a software engineer and I love to code.",
+                                searchListInvestor.about!,
                               )),
                         ),
-                        SizedBox(height: 10.0),
+                        const SizedBox(height: 10.0),
                       ],
                     ),
                   ),
@@ -145,14 +322,27 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
                     child: Column(
                       children: [
                         const SizedBox(height: 10.0),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 30.0),
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text("Investment Sector",
-                                  style: TextStyle(
-                                    fontSize: 20.0,
-                                  ))),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 30.0),
+                          child: Row(
+                            children: [
+                              const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text("Investment Sector",
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                      ))),
+                              const SizedBox(width: 10.0),
+                              IconButton(
+                                onPressed: () {
+                                  showDialogToEdit(1);
+                                },
+                                icon: const Icon(Icons.edit,
+                                    size: 20.0,
+                                    color: Color.fromARGB(255, 144, 141, 141)),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(
                           height: 10,
@@ -178,14 +368,27 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
                     child: Column(
                       children: [
                         const SizedBox(height: 10.0),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 30.0),
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text("Experience",
-                                  style: TextStyle(
-                                    fontSize: 20.0,
-                                  ))),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 30.0),
+                          child: Row(
+                            children: [
+                              const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text("Experience",
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                      ))),
+                              const SizedBox(width: 10.0),
+                              IconButton(
+                                onPressed: () {
+                                  showDialogToEdit(2);
+                                },
+                                icon: const Icon(Icons.edit,
+                                    size: 20.0,
+                                    color: Color.fromARGB(255, 144, 141, 141)),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 10.0),
                         Padding(
@@ -194,7 +397,7 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
                             children: [
                               ClipOval(
                                 child: Image.network(
-                                  url,
+                                  url2,
                                   width: 50,
                                   height: 50,
                                   fit: BoxFit.cover,
@@ -207,11 +410,12 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Padding(
-                                      padding: EdgeInsets.only(left: 20.0),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 20.0),
                                       child: Text(
-                                        "Founder & CEO",
-                                        style: TextStyle(
+                                        searchListInvestor.companytitle!,
+                                        style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold),
                                       ),
@@ -258,11 +462,26 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
                     child: Column(
                       children: [
                         const SizedBox(height: 10.0),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 30.0),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text("Email:"),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 30.0),
+                          child: Row(
+                            children: [
+                              const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text("Email",
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ))),
+                              const SizedBox(width: 10.0),
+                              IconButton(
+                                onPressed: () {
+                                  showDialogToEdit(3);
+                                },
+                                icon: const Icon(Icons.edit,
+                                    size: 20.0,
+                                    color: Color.fromARGB(255, 144, 141, 141)),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 5.0),
