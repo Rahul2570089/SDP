@@ -27,6 +27,73 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
   TextEditingController emailController = TextEditingController();
   TextEditingController headquartersController = TextEditingController();
 
+  List<String> menuItem = [
+    'Select sector',
+    'Sector Agnostic',
+    'Agriculture',
+    'Advertising',
+    'Aeronautics and space',
+    'Airport operations',
+    'Artificial Intelligence',
+    'AR/VR (Augmented and virtual reality)',
+    'Automation',
+    'Architecture',
+    'Art and Photography',
+    'Automobile',
+    'Biotechnology',
+    'Blockchain',
+    'Chemicals',
+    'Construction',
+    'Cloud computing',
+    'Consumer goods',
+    'Cryptocurrency',
+    'Data analytics',
+    'Defence',
+    'Dating Matrimonal',
+    'E-commerce',
+    'Education',
+    'Electronics',
+    'Energy',
+    'Entertainment',
+    'Fashion',
+    'Finance',
+    'Food and beverage',
+    'Gaming',
+    'Government',
+    'Healthcare',
+    'Hospitality',
+    'Human resources',
+    'Insurance',
+    'Information Technology',
+    'Investment',
+    'Logistics',
+    'Manufacturing',
+    'Marketing',
+    'Media',
+    'Medical devices',
+    'Mobile',
+    'Music',
+    'Nanotechnology',
+    'Natural resources',
+    'Pharmaceuticals',
+    'Real estate',
+    'Retail',
+    'Robotics',
+    'Security',
+    'Social media',
+    'Sports',
+    'Supply chain',
+    'Telecommunications',
+    'Textiles',
+    'Transportation',
+    'Travel and Tourism',
+    'Venture capital',
+    'Waste management',
+    'Water'
+  ];
+
+  String selected = "Select sector";
+
   getUser() async {
     QuerySnapshot temp =
         await dataBaseMethods.getUserbyemail(widget.email, "startup");
@@ -54,68 +121,86 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
     showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
-            title: const Text("Edit Profile"),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  index == 0
-                      ? Column(
-                          children: [
-                            TextField(
-                              controller: aboutController,
-                              decoration: const InputDecoration(
-                                hintText: "About",
-                              ),
-                            ),
-                          ],
-                        )
-                      : index == 1
-                          ? Column(
-                              children: [
-                                TextField(
-                                  controller: sectorController,
-                                  decoration: const InputDecoration(
-                                    hintText: "Company Sector",
-                                  ),
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Edit Profile"),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    index == 0
+                        ? Column(
+                            children: [
+                              TextField(
+                                controller: aboutController,
+                                decoration: const InputDecoration(
+                                  hintText: "About",
                                 ),
-                              ],
-                            )
-                          : index == 2
-                              ? Column(
-                                  children: [
-                                    TextField(
-                                      controller: emailController,
-                                      decoration: const InputDecoration(
-                                        hintText: "Email",
-                                      ),
+                              ),
+                            ],
+                          )
+                        : index == 1
+                            ? Column(
+                                children: [
+                                  DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: selected,
+                                      isExpanded: true,
+                                      items: menuItem
+                                          .map((e) => DropdownMenuItem<String>(
+                                              value: e,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 5.0),
+                                                child: Text(e),
+                                              )))
+                                          .toList(),
+                                      onChanged: (val) {
+                                        if (val!.isNotEmpty) {
+                                          setState(() {
+                                            selected = val;
+                                          });
+                                        }
+                                      },
                                     ),
-                                    const SizedBox(height: 10.0),
-                                    TextField(
-                                      controller: headquartersController,
-                                      decoration: const InputDecoration(
-                                        hintText: "Headquarters",
+                                  ),
+                                ],
+                              )
+                            : index == 2
+                                ? Column(
+                                    children: [
+                                      TextField(
+                                        controller: emailController,
+                                        decoration: const InputDecoration(
+                                          hintText: "Email",
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                )
-                              : Container()
-                ],
+                                      const SizedBox(height: 10.0),
+                                      TextField(
+                                        controller: headquartersController,
+                                        decoration: const InputDecoration(
+                                          hintText: "Headquarters",
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Container()
+                  ],
+                ),
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("Cancel"),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: const Text("Save"),
-              ),
-            ],
-          );
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Cancel"),
+                ),
+                TextButton(
+                  onPressed: () {},
+                  child: const Text("Save"),
+                ),
+              ],
+            );
+          });
         });
   }
 

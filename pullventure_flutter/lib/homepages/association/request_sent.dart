@@ -139,7 +139,7 @@ class _RequestSentState extends State<RequestSent> {
                 child: Text("No requests sent"),
               );
             }
-            return listView(list1);
+            return listView(snapshot.data);
           } else {
             return Container();
           }
