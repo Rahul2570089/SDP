@@ -20,7 +20,8 @@ class _RequestSentState extends State<RequestSent> {
   DatabaseMethods dataBaseMethods = DatabaseMethods();
   Map<String, String> downloadUrls = {};
   Stream? pendingRequestStream;
-  List list1 = [];
+  bool checkLength = false;
+  bool isLoading = true;
 
   getPendingRequest() async {
     pendingRequestStream =
@@ -35,6 +36,9 @@ class _RequestSentState extends State<RequestSent> {
         });
       }
     });
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -47,7 +51,7 @@ class _RequestSentState extends State<RequestSent> {
     return ListView.builder(
         itemCount: (list as QuerySnapshot).docs.length,
         itemBuilder: (context, index) {
-          String url = (list).docs[index]['email'].toString();
+          String url = list.docs[index]['email'].toString();
           return list.docs[index]['sender'] == widget.email
               ? Container(
                   padding: const EdgeInsets.all(10.0),
@@ -77,6 +81,7 @@ class _RequestSentState extends State<RequestSent> {
                                         downloadUrls['${url}_photo'] ?? '',
                                         width: 50.0,
                                         height: 50.0,
+                                        fit: BoxFit.cover,
                                         errorBuilder:
                                             (context, error, stackTrace) =>
                                                 const Icon(Icons.account_circle,
@@ -84,11 +89,14 @@ class _RequestSentState extends State<RequestSent> {
                                       ),
                               ),
                               const SizedBox(width: 10.0),
-                              Text(
-                                list.docs[index]['name'],
-                                style: const TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                child: Text(
+                                  list.docs[index]['name'],
+                                  style: const TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
@@ -98,7 +106,6 @@ class _RequestSentState extends State<RequestSent> {
                                 dataBaseMethods.withdrawRequest(widget.type,
                                     currentEmail: widget.email,
                                     email: list.docs[index]['email']);
-
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text("Request withdrawn"),
@@ -121,28 +128,32 @@ class _RequestSentState extends State<RequestSent> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: pendingRequestStream,
-        builder: ((context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasData) {
-            for (var element in (snapshot.data as QuerySnapshot).docs) {
-              if (element['sender'] == widget.email) {
-                list1.add(element);
+    return isLoading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : StreamBuilder(
+            stream: pendingRequestStream,
+            builder: ((context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.hasData) {
+                for (var element in (snapshot.data as QuerySnapshot).docs) {
+                  if (element['sender'] == widget.email) {
+                    setState(() {
+                      checkLength = true;
+                    });
+                    break;
+                  }
+                }
+                return checkLength
+                    ? listView(snapshot.data)
+                    : const Center(child: Text("No requests sent"));
+              } else {
+                return Container();
               }
-            }
-            if (list1.isEmpty) {
-              return const Center(
-                child: Text("No requests sent"),
-              );
-            }
-            return listView(snapshot.data);
-          } else {
-            return Container();
-          }
-        }));
+            }));
   }
 }

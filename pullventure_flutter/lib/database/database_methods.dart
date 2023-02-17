@@ -441,6 +441,91 @@ class DatabaseMethods {
     }
   }
 
+
+rejectRequest(String type,
+      {required String currentEmail, required String email}) async {
+    if (type == "investor") {
+      await firestore
+          .collection("investors")
+          .where("email", isEqualTo: currentEmail)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: email)
+            .get();
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .update({"status": "rejected"});
+      });
+
+      await firestore
+          .collection("startups")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: currentEmail)
+            .get();
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .update({"status": "rejected"});
+      });
+    } else {
+      await firestore
+          .collection("startups")
+          .where("email", isEqualTo: currentEmail)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: email)
+            .get();
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .update({"status": "rejected"});
+      });
+
+      await firestore
+          .collection("investors")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) async {
+        final v = await firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .where("email", isEqualTo: currentEmail)
+            .get();
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(v.docs.first.id)
+            .update({"status": "rejected"});
+      });
+    }
+  }
+
+
+
+
   Future getFriends(String type, String email) async {
     if (type == "investor") {
       final v = await firestore
