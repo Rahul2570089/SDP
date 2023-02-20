@@ -7,6 +7,9 @@ import 'package:pullventure_flutter/auth/authenticate.dart';
 import 'package:pullventure_flutter/homepages/association/pending_request.dart';
 import 'package:pullventure_flutter/homepages/chatscreen/chat_screen.dart';
 import 'package:pullventure_flutter/homepages/chatscreen/search_list.dart';
+import 'package:pullventure_flutter/homepages/events/events.dart';
+import 'package:pullventure_flutter/homepages/government_schemes/government_schemes.dart';
+import 'package:pullventure_flutter/homepages/news/news.dart';
 import 'package:pullventure_flutter/homepages/profiles/associated_list.dart';
 import 'package:pullventure_flutter/homepages/profiles/investor_self.dart';
 import 'package:pullventure_flutter/homepages/profiles/startup_self.dart';
@@ -118,7 +121,6 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 ],
               ),
               child: Column(
-                
                 children: [
                   Row(
                     children: [
@@ -263,72 +265,83 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
         currentIndex: currentIndex,
         selectedItemColor: Colors.amber[800],
       ),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 0,
-                  blurRadius: 7,
-                  offset: const Offset(0, 3), // changes position of shadow
-                ),
-              ],
-            ),
-            child: TextField(
-              controller: searchController,
-              onChanged: (value) async {},
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: 'Search',
-                border: InputBorder.none,
-              ),
-            ),
-          ),
-          Expanded(
-            child: ScrollConfiguration(
-                behavior: CustomBehavior(),
-                child: StreamBuilder(
-                  stream: chatroom,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.hasData) {
-                      return !showSearchList
-                          ? listView(snapshot.data, false)
-                          : listView(searchChat, true);
-                    } else if (!snapshot.hasData) {
-                      return const Center(
-                        child: Text("No chats"),
-                      );
-                    } else {
-                      return const ScaffoldMessenger(
-                          child: Text("Some error occured"));
-                    }
-                  },
-                )),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => SearchList(
-                        email: widget.email,
-                        type: widget.type,
-                      )));
-        },
-        backgroundColor: Colors.amber[800],
-        child: const Icon(Icons.search),
-      ),
+      body: currentIndex == 1
+          ? const News()
+          : currentIndex == 2
+              ? const Events()
+              : currentIndex == 3
+                  ? const GovernmentSchemes()
+                  : Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 5.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 0,
+                                blurRadius: 7,
+                                offset: const Offset(
+                                    0, 3), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: searchController,
+                            onChanged: (value) async {},
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(Icons.search),
+                              hintText: 'Search',
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: ScrollConfiguration(
+                              behavior: CustomBehavior(),
+                              child: StreamBuilder(
+                                stream: chatroom,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  } else if (snapshot.hasData) {
+                                    return !showSearchList
+                                        ? listView(snapshot.data, false)
+                                        : listView(searchChat, true);
+                                  } else if (!snapshot.hasData) {
+                                    return const Center(
+                                      child: Text("No chats"),
+                                    );
+                                  } else {
+                                    return const ScaffoldMessenger(
+                                        child: Text("Some error occured"));
+                                  }
+                                },
+                              )),
+                        ),
+                      ],
+                    ),
+      floatingActionButton: currentIndex == 0
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SearchList(
+                              email: widget.email,
+                              type: widget.type,
+                            )));
+              },
+              backgroundColor: Colors.amber[800],
+              child: const Icon(Icons.search),
+            )
+          : null,
     );
   }
 }
