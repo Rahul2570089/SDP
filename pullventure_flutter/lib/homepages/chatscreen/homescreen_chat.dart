@@ -254,12 +254,12 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
           BottomNavigationBarItem(
               icon: Icon(Icons.newspaper), label: 'News', tooltip: 'News'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.event), label: 'Events', tooltip: 'Events'),
-          BottomNavigationBarItem(
             icon: Icon(Icons.schema_outlined),
             label: 'Government schemes',
             tooltip: 'Government schemes',
           ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.event), label: 'Events', tooltip: 'Events'),
         ],
         onTap: (value) => setState(() => currentIndex = value),
         currentIndex: currentIndex,
@@ -267,9 +267,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
       ),
       body: currentIndex == 1
           ? const News()
-          : currentIndex == 2
+          : currentIndex == 3
               ? const Events()
-              : currentIndex == 3
+              : currentIndex == 2
                   ? const GovernmentSchemes()
                   : Column(
                       children: [
