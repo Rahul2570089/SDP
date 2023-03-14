@@ -36,9 +36,11 @@ class _RequestReceivedState extends State<RequestReceived> {
         });
       }
     });
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -52,7 +54,7 @@ class _RequestReceivedState extends State<RequestReceived> {
         itemCount: (list as QuerySnapshot).docs.length,
         itemBuilder: (context, index) {
           String url = list.docs[index]['email'].toString();
-          return list.docs[index]['email'] != list.docs[index]['sender']
+          return widget.email != list.docs[index]['sender']
               ? Container(
                   padding: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
@@ -158,10 +160,8 @@ class _RequestReceivedState extends State<RequestReceived> {
                 );
               } else if (snapshot.hasData) {
                 for (var element in (snapshot.data as QuerySnapshot).docs) {
-                  if (element['sender'] == widget.email) {
-                    setState(() {
-                      checkLength = true;
-                    });
+                  if (element['sender'] != widget.email) {
+                    checkLength = true;
                     break;
                   }
                 }

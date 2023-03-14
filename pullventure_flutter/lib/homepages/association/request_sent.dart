@@ -30,15 +30,13 @@ class _RequestSentState extends State<RequestSent> {
     await dataBaseMethods
         .getAllLogos(widget.type == "investor" ? "startups" : "investors")
         .then((value) {
-      if (mounted) {
-        setState(() {
-          downloadUrls = value;
-        });
-      }
+      downloadUrls = value;
     });
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -142,9 +140,7 @@ class _RequestSentState extends State<RequestSent> {
               } else if (snapshot.hasData) {
                 for (var element in (snapshot.data as QuerySnapshot).docs) {
                   if (element['sender'] == widget.email) {
-                    setState(() {
-                      checkLength = true;
-                    });
+                    checkLength = true;
                     break;
                   }
                 }

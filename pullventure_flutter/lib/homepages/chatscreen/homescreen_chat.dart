@@ -258,8 +258,8 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
             label: 'Government schemes',
             tooltip: 'Government schemes',
           ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.event), label: 'Events', tooltip: 'Events'),
+          // BottomNavigationBarItem(
+          //     icon: Icon(Icons.event), label: 'Events', tooltip: 'Events'),
         ],
         onTap: (value) => setState(() => currentIndex = value),
         currentIndex: currentIndex,
@@ -267,66 +267,66 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
       ),
       body: currentIndex == 1
           ? const News()
-          : currentIndex == 3
-              ? const Events()
-              : currentIndex == 2
-                  ? const GovernmentSchemes()
-                  : Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 5.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 0,
-                                blurRadius: 7,
-                                offset: const Offset(
-                                    0, 3), // changes position of shadow
-                              ),
-                            ],
+          // : currentIndex == 3
+          //     ? const Events()
+          : currentIndex == 2
+              ? const GovernmentSchemes()
+              : Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 5.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 0,
+                            blurRadius: 7,
+                            offset: const Offset(
+                                0, 3), // changes position of shadow
                           ),
-                          child: TextField(
-                            controller: searchController,
-                            onChanged: (value) async {},
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.search),
-                              hintText: 'Search',
-                              border: InputBorder.none,
-                            ),
-                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: (value) async {},
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.search),
+                          hintText: 'Search',
+                          border: InputBorder.none,
                         ),
-                        Expanded(
-                          child: ScrollConfiguration(
-                              behavior: CustomBehavior(),
-                              child: StreamBuilder(
-                                stream: chatroom,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  } else if (snapshot.hasData) {
-                                    return !showSearchList
-                                        ? listView(snapshot.data, false)
-                                        : listView(searchChat, true);
-                                  } else if (!snapshot.hasData) {
-                                    return const Center(
-                                      child: Text("No chats"),
-                                    );
-                                  } else {
-                                    return const ScaffoldMessenger(
-                                        child: Text("Some error occured"));
-                                  }
-                                },
-                              )),
-                        ),
-                      ],
+                      ),
                     ),
+                    Expanded(
+                      child: ScrollConfiguration(
+                          behavior: CustomBehavior(),
+                          child: StreamBuilder(
+                            stream: chatroom,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else if (snapshot.hasData) {
+                                return !showSearchList
+                                    ? listView(snapshot.data, false)
+                                    : listView(searchChat, true);
+                              } else if (!snapshot.hasData) {
+                                return const Center(
+                                  child: Text("No chats"),
+                                );
+                              } else {
+                                return const ScaffoldMessenger(
+                                    child: Text("Some error occured"));
+                              }
+                            },
+                          )),
+                    ),
+                  ],
+                ),
       floatingActionButton: currentIndex == 0
           ? FloatingActionButton(
               onPressed: () {
