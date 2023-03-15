@@ -441,8 +441,7 @@ class DatabaseMethods {
     }
   }
 
-
-rejectRequest(String type,
+  rejectRequest(String type,
       {required String currentEmail, required String email}) async {
     if (type == "investor") {
       await firestore
@@ -522,9 +521,6 @@ rejectRequest(String type,
       });
     }
   }
-
-
-
 
   Future getFriends(String type, String email) async {
     if (type == "investor") {
@@ -590,5 +586,94 @@ rejectRequest(String type,
         return false;
       }
     }
+  }
+
+  updateAbout(
+      {required String type,
+      required String email,
+      required String newContent}) {
+    if (type == "investor") {
+      firestore
+          .collection("investors")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) async {
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .update({"about": newContent});
+      });
+    } else {
+      firestore
+          .collection("startups")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) async {
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .update({"description": newContent});
+      });
+    }
+  }
+
+  updateSector(
+      {required String type,
+      required String email,
+      required String newSector}) {
+    if (type == "investor") {
+      firestore
+          .collection("investors")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) async {
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .update({"investmentsector": newSector});
+      });
+    } else {
+      firestore
+          .collection("startups")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value) async {
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .update({"sector": newSector});
+      });
+    }
+  }
+
+  updateHeadquarters({required String email, required String newHeadquarters}) {
+    firestore
+        .collection("startups")
+        .where("email", isEqualTo: email)
+        .get()
+        .then((value) async {
+      firestore
+          .collection("startups")
+          .doc(value.docs.first.id)
+          .update({"headquarters": newHeadquarters});
+    });
+  }
+
+  addExperience(
+      {required String email,
+      required String title,
+      required String company,
+      required String description}) {
+    firestore
+        .collection("investors")
+        .where("email", isEqualTo: email)
+        .get()
+        .then((value) async {
+      firestore.collection("investors").doc(value.docs.first.id).update({
+        "companytitle": title,
+        "companyname": company,
+        "aboutcompany": description,
+      });
+    });
   }
 }

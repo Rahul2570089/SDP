@@ -5,9 +5,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:pullventure_flutter/auth/authenticate.dart';
 import 'package:pullventure_flutter/homepages/association/pending_request.dart';
+import 'package:pullventure_flutter/homepages/chatscreen/chat_list.dart';
 import 'package:pullventure_flutter/homepages/chatscreen/chat_screen.dart';
 import 'package:pullventure_flutter/homepages/chatscreen/search_list.dart';
-import 'package:pullventure_flutter/homepages/events/events.dart';
 import 'package:pullventure_flutter/homepages/government_schemes/government_schemes.dart';
 import 'package:pullventure_flutter/homepages/news/news.dart';
 import 'package:pullventure_flutter/homepages/profiles/associated_list.dart';
@@ -172,7 +172,8 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat Screen'),
+        title:
+            Text(widget.type == "startup" ? "Investors list" : "Startups list"),
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         centerTitle: true,
@@ -245,15 +246,17 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Chat',
-            tooltip: 'Chat',
+            icon: const Icon(Icons.home),
+            label:
+                widget.type == "startup" ? "Investors list" : "Startups list",
+            tooltip:
+                widget.type == "startup" ? "Investors list" : "Startups list",
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
               icon: Icon(Icons.newspaper), label: 'News', tooltip: 'News'),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.schema_outlined),
             label: 'Government schemes',
             tooltip: 'Government schemes',
@@ -271,75 +274,18 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
           //     ? const Events()
           : currentIndex == 2
               ? const GovernmentSchemes()
-              : Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 5.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 0,
-                            blurRadius: 7,
-                            offset: const Offset(
-                                0, 3), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: TextField(
-                        controller: searchController,
-                        onChanged: (value) async {},
-                        decoration: const InputDecoration(
-                          prefixIcon: Icon(Icons.search),
-                          hintText: 'Search',
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: ScrollConfiguration(
-                          behavior: CustomBehavior(),
-                          child: StreamBuilder(
-                            stream: chatroom,
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              } else if (snapshot.hasData) {
-                                return !showSearchList
-                                    ? listView(snapshot.data, false)
-                                    : listView(searchChat, true);
-                              } else if (!snapshot.hasData) {
-                                return const Center(
-                                  child: Text("No chats"),
-                                );
-                              } else {
-                                return const ScaffoldMessenger(
-                                    child: Text("Some error occured"));
-                              }
-                            },
-                          )),
-                    ),
-                  ],
-                ),
+              : SearchList(type: widget.type, email: widget.email),
       floatingActionButton: currentIndex == 0
           ? FloatingActionButton(
               onPressed: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => SearchList(
-                              email: widget.email,
-                              type: widget.type,
-                            )));
+                        builder: (context) =>
+                            ChatList(type: widget.type, email: widget.email)));
               },
               backgroundColor: Colors.amber[800],
-              child: const Icon(Icons.search),
+              child: const Icon(Icons.message_rounded),
             )
           : null,
     );

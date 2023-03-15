@@ -158,16 +158,6 @@ class _SearchListState extends State<SearchList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: widget.type == 'investor'
-            ? const Text('Search start-ups')
-            : const Text('Search investors'),
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        centerTitle: true,
-        titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20.0),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(

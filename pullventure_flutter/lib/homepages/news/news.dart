@@ -68,16 +68,21 @@ class _NewsState extends State<News> {
                 child: SizedBox(
                   height: 100,
                   width: 100,
-                  child: Image.network(
-                    '${news[position].urlimage}',
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        "./assets/images/unavailable.png",
-                        fit: BoxFit.contain,
-                      );
-                    },
-                  ),
+                  child: news[position].urlimage == null
+                      ? Image.asset(
+                          "./assets/images/unavailable.png",
+                          fit: BoxFit.contain,
+                        )
+                      : Image.network(
+                          '${news[position].urlimage}',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              "./assets/images/unavailable.png",
+                              fit: BoxFit.contain,
+                            );
+                          },
+                        ),
                 ),
               ),
               onTap: () => {launchUrl(Uri.parse(news[position].url!))},

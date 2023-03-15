@@ -121,7 +121,7 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
     showDialog(
         context: context,
         builder: (context) {
-          return StatefulBuilder(builder: (context, setState) {
+          return StatefulBuilder(builder: (context2, setState2) {
             return AlertDialog(
               title: const Text("Edit Profile"),
               content: SingleChildScrollView(
@@ -169,13 +169,6 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
                                 ? Column(
                                     children: [
                                       TextField(
-                                        controller: emailController,
-                                        decoration: const InputDecoration(
-                                          hintText: "Email",
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10.0),
-                                      TextField(
                                         controller: headquartersController,
                                         decoration: const InputDecoration(
                                           hintText: "Headquarters",
@@ -195,7 +188,60 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
                   child: const Text("Cancel"),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    if (index == 0) {
+                      if (aboutController.text == '') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please enter a description'),
+                          ),
+                        );
+                        return;
+                      }
+                      dataBaseMethods.updateAbout(
+                          type: "startup",
+                          email: widget.email,
+                          newContent: aboutController.text);
+                      setState(() {
+                        searchListStartup.description = aboutController.text;
+                      });
+                      Navigator.pop(context);
+                    } else if (index == 1) {
+                      if (selected == "Select sector") {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please select a sector'),
+                          ),
+                        );
+                        return;
+                      }
+                      dataBaseMethods.updateSector(
+                          type: "startup",
+                          email: widget.email,
+                          newSector: selected);
+                      setState(() {
+                        searchListStartup.sector = selected;
+                      });
+                      Navigator.pop(context);
+                    } else if (index == 2) {
+                      if (headquartersController.text == '') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please enter a headquarters'),
+                          ),
+                        );
+                        return;
+                      }
+                      dataBaseMethods.updateHeadquarters(
+                          email: widget.email,
+                          newHeadquarters: headquartersController.text);
+                      setState(() {
+                        searchListStartup.headquarters =
+                            headquartersController.text;
+                      });
+                      Navigator.pop(context);
+                    }
+                  },
                   child: const Text("Save"),
                 ),
               ],
@@ -279,28 +325,16 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
                       children: [
                         isLoading
                             ? const Center(child: CircularProgressIndicator())
-                            : Stack(children: [
-                                Image.network(
+                            : GestureDetector(
+                                onTap: () => pickImage(context),
+                                child: Image.network(
                                   url,
                                   fit: BoxFit.contain,
                                   errorBuilder: (context, error, stackTrace) =>
                                       const Icon(Icons.account_circle,
                                           size: 150),
                                 ),
-                                Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: IconButton(
-                                    onPressed: () {
-                                      pickImage(context);
-                                    },
-                                    icon: const Icon(Icons.edit,
-                                        size: 25.0,
-                                        color:
-                                            Color.fromARGB(255, 144, 141, 141)),
-                                  ),
-                                ),
-                              ]),
+                              ),
                         const SizedBox(height: 10.0),
                         Text(
                           searchListStartup.name!,
