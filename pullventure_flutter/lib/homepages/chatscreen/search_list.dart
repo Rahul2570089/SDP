@@ -20,9 +20,9 @@ class _SearchListState extends State<SearchList> {
   TextEditingController searchController = TextEditingController();
   DatabaseMethods dataBaseMethods = DatabaseMethods();
   QuerySnapshot? snapshot;
-  List<InvestorModel> searchListInvestor = [], filterListInvestor = [];
-  List<StartUpModel> searchListStartup = [], filterListStartup = [];
-  Map<String, String> downloadUrls = {};
+  static List<InvestorModel> searchListInvestor = [], filterListInvestor = [];
+  static List<StartUpModel> searchListStartup = [], filterListStartup = [];
+  static Map<String, String> downloadUrls = {};
   bool isLoading = true;
   bool show = false;
   String token = "";
@@ -67,7 +67,23 @@ class _SearchListState extends State<SearchList> {
   @override
   void initState() {
     super.initState();
-    getUser();
+    if (widget.type == "investor") {
+      if (searchListStartup.isEmpty) {
+        getUser();
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } else {
+      if (searchListInvestor.isEmpty) {
+        getUser();
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 
   Widget listView(list) {

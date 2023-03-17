@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:pullventure_flutter/database/database_methods.dart';
@@ -29,9 +30,84 @@ class _InvestorProfileState extends State<InvestorProfile> {
   DatabaseMethods dataBaseMethods = DatabaseMethods();
   TextEditingController messageController = TextEditingController();
   TextEditingController amountController = TextEditingController();
+  Map<String, String> downloadUrls = {};
+  Stream? associatedListStream;
+  bool isLoading = true;
   String token = "";
   bool isFriend = false;
   bool isRequested = true;
+
+  Widget listView(list) {
+    return ListView.builder(
+        itemCount: (list as QuerySnapshot).docs.length,
+        shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
+        itemBuilder: (context, index) {
+          String url = (list).docs[index]['email'].toString();
+          debugPrint("url: $url");
+          return Container(
+            padding: const EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 0,
+                  blurRadius: 7,
+                  offset: const Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    ClipOval(
+                      child: downloadUrls['${url}_photo'] == null
+                          ? const Icon(Icons.account_circle, size: 50)
+                          : Image.network(
+                              downloadUrls['${url}_photo'] ?? '',
+                              width: 50.0,
+                              height: 50.0,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.account_circle, size: 50),
+                            ),
+                    ),
+                    const SizedBox(width: 10.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          child: Text(
+                            list.docs[index]['name'],
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          "₹${list.docs[index]['amount']}",
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const Divider(
+                  thickness: 1,
+                  indent: 55,
+                )
+              ],
+            ),
+          );
+        });
+  }
 
   getToken() async {
     token = await dataBaseMethods.getUserTokenbyEmail(
@@ -96,11 +172,30 @@ class _InvestorProfileState extends State<InvestorProfile> {
     }
   }
 
+  getLogos() async {
+    await dataBaseMethods.getAllLogos("startups").then((value) {
+      if (mounted) {
+        setState(() {
+          downloadUrls = value;
+        });
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     getToken();
     checkIfFriend();
+    dataBaseMethods
+        .getFriends('investor', widget.investorModel.email!)
+        .then((value) {
+      setState(() {
+        associatedListStream = value;
+        isLoading = false;
+      });
+    });
+    getLogos();
   }
 
   checkIfFriend() async {
@@ -309,9 +404,7 @@ class _InvestorProfileState extends State<InvestorProfile> {
                       children: [
                         ClipOval(
                           child: Image.network(
-                            widget.imgUrl[
-                                    '${widget.email}_photo'] ??
-                                "",
+                            widget.imgUrl['${widget.email}_photo'] ?? "",
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
@@ -391,6 +484,45 @@ class _InvestorProfileState extends State<InvestorProfile> {
                         )),
                   ),
                   const SizedBox(height: 10.0),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            Container(
+              decoration: const BoxDecoration(color: Colors.white),
+              child: Column(
+                children: [
+                  const SizedBox(height: 10.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 30.0, bottom: 10),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Associations",
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),
+                        )),
+                  ),
+                  StreamBuilder(
+                    stream: associatedListStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasData) {
+                        return listView(snapshot.data);
+                      } else if (!snapshot.hasData) {
+                        return const Center(
+                          child: Text("No associations"),
+                        );
+                      } else {
+                        return const ScaffoldMessenger(
+                            child: Text("Some error occured"));
+                      }
+                    },
+                  ),
                 ],
               ),
             ),

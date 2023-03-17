@@ -15,17 +15,17 @@ class SelfProfileStartUp extends StatefulWidget {
 
 class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
   DatabaseMethods dataBaseMethods = DatabaseMethods();
-  Map<String, String> downloadUrls = {};
-  StartUpModel searchListStartup = StartUpModel(
+  static Map<String, String> downloadUrls = {};
+  static StartUpModel searchListStartup = StartUpModel(
       name: "", email: "", headquarters: "", description: "", sector: "");
   bool isLoading = true;
-  String url = "";
-  PlatformFile? _image;
+  static String url = "";
+  static PlatformFile? _image;
 
-  TextEditingController aboutController = TextEditingController();
+  static TextEditingController aboutController = TextEditingController();
   TextEditingController sectorController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController headquartersController = TextEditingController();
+  static TextEditingController headquartersController = TextEditingController();
 
   List<String> menuItem = [
     'Select sector',
@@ -92,7 +92,7 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
     'Water'
   ];
 
-  String selected = "Select sector";
+  static String selected = "Select sector";
 
   getUser() async {
     QuerySnapshot temp =
@@ -157,6 +157,9 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
                                       onChanged: (val) {
                                         if (val!.isNotEmpty) {
                                           setState(() {
+                                            selected = val;
+                                          });
+                                          setState2(() {
                                             selected = val;
                                           });
                                         }
@@ -297,7 +300,17 @@ class _SelfProfileStartUpState extends State<SelfProfileStartUp> {
   @override
   void initState() {
     super.initState();
-    getUser();
+    if (searchListStartup.email == "" ||
+        searchListStartup.description == "" ||
+        searchListStartup.headquarters == "" ||
+        searchListStartup.sector == "" ||
+        searchListStartup.name == "") {
+      getUser();
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override

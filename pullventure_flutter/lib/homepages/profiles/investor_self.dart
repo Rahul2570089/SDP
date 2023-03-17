@@ -19,8 +19,8 @@ class SelfProfileInvestor extends StatefulWidget {
 
 class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
   DatabaseMethods dataBaseMethods = DatabaseMethods();
-  Map<String, String> downloadUrls = {};
-  InvestorModel searchListInvestor = InvestorModel(
+  static Map<String, String> downloadUrls = {};
+  static InvestorModel searchListInvestor = InvestorModel(
       name: "",
       email: "",
       mobileNumber: "",
@@ -28,9 +28,9 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
       companyName: "",
       aboutCompany: "");
   bool isLoading = true;
-  String url = "";
-  String url2 = "";
-  PlatformFile? _image;
+  static String url = "";
+  static String url2 = "";
+  static PlatformFile? _image;
 
   TextEditingController aboutController = TextEditingController();
   TextEditingController sectorController = TextEditingController();
@@ -104,7 +104,7 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
     'Water'
   ];
 
-  String selected = "Select sector";
+  static String selected = "Select sector";
 
   getUser() async {
     QuerySnapshot temp =
@@ -179,6 +179,9 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
                                       onChanged: (val) {
                                         if (val!.isNotEmpty) {
                                           setState(() {
+                                            selected = val;
+                                          });
+                                          setState2(() {
                                             selected = val;
                                           });
                                         }
@@ -347,7 +350,19 @@ class _SelfProfileInvestorState extends State<SelfProfileInvestor> {
   @override
   void initState() {
     super.initState();
-    getUser();
+    if (searchListInvestor.email == "" ||
+        searchListInvestor.about == "" ||
+        searchListInvestor.aboutCompany == "" ||
+        searchListInvestor.companyName == "" ||
+        searchListInvestor.name == "" ||
+        searchListInvestor.companytitle == "" ||
+        searchListInvestor.investmentSector == "") {
+      getUser();
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override

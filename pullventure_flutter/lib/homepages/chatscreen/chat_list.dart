@@ -20,17 +20,19 @@ class _ChatListState extends State<ChatList> {
   int currentIndex = 0;
   TextEditingController searchController = TextEditingController();
   DatabaseMethods dataBaseMethods = DatabaseMethods();
-  List<Map<String, dynamic>> searchChat = [];
-  Map<String, String> downloadUrls = {};
-  Stream? chatroom;
+  static List<Map<String, dynamic>> searchChat = [];
+  static Map<String, String> downloadUrls = {};
+  static Stream? chatroom;
   bool showSearchList = false;
   int popUpVal = 0;
   FirebaseMessaging message = FirebaseMessaging.instance;
 
   @override
   void initState() {
-    getuserinfo();
     super.initState();
+    if (chatroom == null || downloadUrls.isEmpty) {
+      getuserinfo();
+    }
   }
 
   getFirebaseMessagingToken() async {
