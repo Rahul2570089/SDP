@@ -173,7 +173,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title:
-            Text(widget.type == "startup" ? "Investors list" : "Startups list"),
+            Text(currentIndex==0 ?  widget.type == "startup" ? "Investors list" : "Startups list" : currentIndex==1 ? "News" : "Government Schemes"),
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         centerTitle: true,
