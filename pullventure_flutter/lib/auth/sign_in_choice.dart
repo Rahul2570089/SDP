@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:pullventure_flutter/auth/signin/sign_in_investor.dart';
 import 'package:pullventure_flutter/auth/signin/sign_in_startup.dart';
 
-
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
 
@@ -11,31 +10,33 @@ class SignIn extends StatefulWidget {
   State<SignIn> createState() => _SignInState();
 }
 
-
 class _SignInState extends State<SignIn> {
-
-@override
-void initState() {
-  super.initState();
-  SystemChrome.setPreferredOrientations([
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
-  ]);
-}
+    ]);
+  }
 
-@override
-dispose(){
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeRight,
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-  super.dispose();
-}
-
+  @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    Image image =
+        Image.asset("./assets/images/logo.jpg", height: 250, width: 250);
+
+    precacheImage(image.image, context);
+
     return Stack(children: [
       Image.asset("./assets/images/background.png",
           fit: BoxFit.cover, height: double.infinity, width: double.infinity),
@@ -59,8 +60,7 @@ dispose(){
             ),
             child: Column(
               children: [
-                Image.asset("./assets/images/logo.jpg",
-                    height: 250, width: 250),
+                image,
                 const Text("Are you an investor?",
                     style:
                         TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -72,17 +72,22 @@ dispose(){
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInInvestor()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignInInvestor()));
                       },
                       style: ButtonStyle(
                         elevation: MaterialStateProperty.all<double>(0),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(const Color(0xFFfeb06a),),
-                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                          const Color(0xFFfeb06a),
+                        ),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
+                        ),
                       ),
                       child: const Text(
                         "Sign up as an investor",
@@ -103,17 +108,22 @@ dispose(){
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInStartUp()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignInStartUp()));
                       },
                       style: ButtonStyle(
                         elevation: MaterialStateProperty.all<double>(0),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(const Color(0xFFfeb06a),),
-                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                          const Color(0xFFfeb06a),
+                        ),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
+                        ),
                       ),
                       child: const Text(
                         "Sign up as a start-up",

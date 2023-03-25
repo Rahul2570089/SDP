@@ -263,7 +263,7 @@ class _StartupProfileState extends State<StartupProfile> {
                                           name: widget.startupModel.name!,
                                           currentEmail: widget.email,
                                           email: widget.startupModel.email!,
-                                          amount: amountController.text,
+                                          amount: "${amountController.text}M",
                                           message: messageController.text);
                                       sendPushNotification(
                                           token,
@@ -280,7 +280,38 @@ class _StartupProfileState extends State<StartupProfile> {
                       icon: Image.asset("assets/images/add-friend.png",
                           width: 25, height: 25),
                     )
-                  : Container(),
+                  : IconButton(
+                      icon: Image.asset("assets/images/remove-friend.png"),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Remove friend"),
+                                content: const Text(
+                                    "Are you sure you want to remove this friend?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Cancel"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      dataBaseMethods.removeStartupAsFriend(
+                                          email: widget.email,
+                                          currentEmail:
+                                              widget.startupModel.email!);
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Remove"),
+                                  ),
+                                ],
+                              );
+                            });
+                      },
+                    ),
         ],
       ),
       body: SingleChildScrollView(

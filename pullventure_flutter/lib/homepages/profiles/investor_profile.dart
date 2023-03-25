@@ -235,7 +235,8 @@ class _InvestorProfileState extends State<InvestorProfile> {
                                       controller: amountController,
                                       keyboardType: TextInputType.number,
                                       decoration: const InputDecoration(
-                                        hintText: "Enter invested amount",
+                                        hintText:
+                                            "Enter invested amount in millions",
                                       ),
                                     ),
                                     const SizedBox(height: 10),
@@ -263,7 +264,7 @@ class _InvestorProfileState extends State<InvestorProfile> {
                                           name: widget.investorModel.name!,
                                           currentEmail: widget.email,
                                           email: widget.investorModel.email!,
-                                          amount: amountController.text,
+                                          amount: "${amountController.text}M",
                                           message: messageController.text);
                                       sendPushNotification(
                                           token,
@@ -280,7 +281,38 @@ class _InvestorProfileState extends State<InvestorProfile> {
                       icon: Image.asset("assets/images/add-friend.png",
                           width: 25, height: 25),
                     )
-                  : Container(),
+                  : IconButton(
+                      icon: Image.asset("assets/images/remove-friend.png"),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Remove friend"),
+                                content: const Text(
+                                    "Are you sure you want to remove this friend?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Cancel"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      dataBaseMethods.removeInvestorAsFriend(
+                                          email: widget.email,
+                                          currentEmail:
+                                              widget.investorModel.email!);
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Remove"),
+                                  ),
+                                ],
+                              );
+                            });
+                      },
+                    ),
         ],
       ),
       body: SingleChildScrollView(

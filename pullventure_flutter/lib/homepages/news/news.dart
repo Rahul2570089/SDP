@@ -25,7 +25,7 @@ class _NewsState extends State<News> {
     if (response.statusCode == 200) {
       if (mounted) {
         setState(() {
-          mapresponse = json.decode(response.body);
+          mapresponse = json.decode(utf8.decode(response.bodyBytes));
           var resp = mapresponse!['articles'] as List;
           list = resp.map((json) => NewsModel.fromJson(json)).toList();
         });
@@ -34,7 +34,7 @@ class _NewsState extends State<News> {
     if (response2.statusCode == 200) {
       if (mounted) {
         setState(() {
-          mapresponse = json.decode(response2.body);
+          mapresponse = json.decode(utf8.decode(response2.bodyBytes));
           var resp = mapresponse!['results'] as List;
           list += resp
               .map((json) => NewsModel(

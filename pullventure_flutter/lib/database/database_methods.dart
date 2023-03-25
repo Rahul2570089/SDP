@@ -676,4 +676,93 @@ class DatabaseMethods {
       });
     });
   }
+
+  removeStartupAsFriend({required String email, required String currentEmail}) {
+    firestore
+        .collection("startups")
+        .where("email", isEqualTo: currentEmail)
+        .get()
+        .then((value) async {
+      firestore
+          .collection("startups")
+          .doc(value.docs.first.id)
+          .collection("friendlist")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value2) async {
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(value2.docs.first.id)
+            .delete();
+      });
+    });
+
+    firestore
+        .collection("investors")
+        .where("email", isEqualTo: email)
+        .get()
+        .then((value) async {
+      firestore
+          .collection("investors")
+          .doc(value.docs.first.id)
+          .collection("friendlist")
+          .where("email", isEqualTo: currentEmail)
+          .get()
+          .then((value2) async {
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(value2.docs.first.id)
+            .delete();
+      });
+    });
+  }
+
+  removeInvestorAsFriend(
+      {required String email, required String currentEmail}) {
+    firestore
+        .collection("investors")
+        .where("email", isEqualTo: currentEmail)
+        .get()
+        .then((value) async {
+      firestore
+          .collection("investors")
+          .doc(value.docs.first.id)
+          .collection("friendlist")
+          .where("email", isEqualTo: email)
+          .get()
+          .then((value2) async {
+        firestore
+            .collection("investors")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(value2.docs.first.id)
+            .delete();
+      });
+    });
+
+    firestore
+        .collection("startups")
+        .where("email", isEqualTo: email)
+        .get()
+        .then((value) async {
+      firestore
+          .collection("startups")
+          .doc(value.docs.first.id)
+          .collection("friendlist")
+          .where("email", isEqualTo: currentEmail)
+          .get()
+          .then((value2) async {
+        firestore
+            .collection("startups")
+            .doc(value.docs.first.id)
+            .collection("friendlist")
+            .doc(value2.docs.first.id)
+            .delete();
+      });
+    });
+  }
 }

@@ -13,7 +13,7 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 // The client is set up to connect to a Serverpod running on a local server on
 // the default port. You will need to modify this to connect to staging or
 // production servers.
-var client = Client('http://192.168.1.7:8080/')
+var client = Client('http://192.168.1.4:8080/')
   ..connectivityMonitor = FlutterConnectivityMonitor();
 
 void main() async {
